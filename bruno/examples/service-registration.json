@@ -1,0 +1,19 @@
+{
+  "name": "My Simulator",
+  "version": "1.2.0",
+  "instanceId": "3f920a311a",
+  "replicaId": "001",
+  "description": "My simple simulator implementing AA-123 transaction",
+  "providedInterfaces": [
+    {
+      "interfaceName": "Simulation Service API",
+      "interfaceVersion": "1.0.0",
+      "bindings": [
+        {
+          "@type": "REST",
+          "serviceUrl": "https://my.domain.net/my-simulator"
+        }
+      ]
+    }
+  ]
+}

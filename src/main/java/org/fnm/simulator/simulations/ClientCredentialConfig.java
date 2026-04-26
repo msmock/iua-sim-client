@@ -1,0 +1,115 @@
+package org.fnm.simulator.simulations;
+
+import net.ihe.gazelle.simulation.business.callback.Role;
+import net.ihe.gazelle.simulation.business.setup.*;
+import org.jboss.logging.Logger;
+
+import java.util.List;
+
+/**
+ * Container for the simulation configuration and parameters.
+ */
+public class ClientCredentialConfig {
+
+    private static final Logger LOG = Logger.getLogger(ClientCredentialConfig.class);
+
+    // fixed for IUA client simulation
+    public final Role initiator;
+    public final Role responder;
+
+    // parameter read from setup indicating the current test session
+    public String sessionId;
+
+    // the identity of the sequence supported by the simulation
+    public String sequenceId;
+
+    public long timeoutInSeconds;
+
+    // parameters read from setup
+    public List<Parameter> simulationParameters;
+
+    // parameter read from setup
+    public String clientId;
+    public String clientSecret;
+    public String principal;
+    public String principalId;
+    public String person;
+    public String scope;
+    public String tokenEndpointUrl;
+    public String jwtPublicKey;
+
+    public ClientCredentialConfig(String sessionId, SimulationRequest simulationRequest) {
+
+        this.sessionId = sessionId;
+        this.sequenceId = simulationRequest.getSequenceId();
+        this.simulationParameters = simulationRequest.getSimulationParameters();
+
+        this.timeoutInSeconds = simulationRequest.getTimeoutSeconds();
+
+        initiator = new Role();
+        initiator.setName("IUA Client");
+        initiator.setConfigs(List.of());
+        initiator.setSimulated(true);
+
+        responder = new Role();
+        responder.setName("CH:IUA Server");
+        responder.setConfigs(List.of());
+
+        // parse parameters
+        for (Parameter parameter : simulationParameters) {
+
+            String name = parameter.getName();
+            ParameterType type = parameter.getType();
+
+            if ((type != null) && type.equals(ParameterType.TEXT)){
+                switch (name) {
+                    case "tokenEndpointUrl" -> tokenEndpointUrl = parameter.getValue();
+                    case "client_id" -> clientId = parameter.getValue();
+                    case "client_secret" -> clientSecret = parameter.getValue();
+                    case "principal" -> principal = parameter.getValue();
+                    case "principal_id" -> principalId = parameter.getValue();
+                    case "person_id" -> person = parameter.getValue();
+                    case "scope" -> scope = parameter.getValue();
+                    case "jwtPublicKey" -> jwtPublicKey = parameter.getValue();
+                }
+            }
+        }
+    }
+
+    public AdditionalInstructions validate() {
+
+        StringBuilder builder = new StringBuilder();
+        if (tokenEndpointUrl == null || tokenEndpointUrl.isEmpty())
+            builder.append("Token endpoint URL is not set.");
+
+        if (clientId == null || clientId.isEmpty())
+            builder.append("Client id is not set.");
+
+        if (clientSecret == null || clientSecret.isEmpty())
+            builder.append("Client secret is not set.");
+
+        if (principal == null || principal.isEmpty())
+            builder.append("Principal is not set.");
+
+        if (principalId == null || principalId.isEmpty())
+            builder.append("Principal id is not set.");
+
+        if (scope == null || scope.isEmpty())
+            builder.append("Scope is not set.");
+
+        if (jwtPublicKey == null || jwtPublicKey.isEmpty())
+            builder.append("JWT public key is not set.");
+
+        String message = builder.toString();
+        if (!message.isEmpty()) {
+            LOG.error(message);
+            AdditionalInstructions additionalInstructions = new AdditionalInstructions();
+            additionalInstructions.setSimulationId(sequenceId);
+            additionalInstructions.setInstruction(message);
+            return additionalInstructions; // new SwitchToExecution();
+        }
+
+        return null;
+    }
+
+}
