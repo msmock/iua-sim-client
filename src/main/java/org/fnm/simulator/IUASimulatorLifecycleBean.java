@@ -56,12 +56,16 @@ public class IUASimulatorLifecycleBean {
 
         LOG.info("The application is starting...");
 
-        String url = wsUrlBase + "/" + instanceId + "/" + replicaId;
+        final String url = wsUrlBase + "/" + instanceId + "/" + replicaId;
 
-        connection = connector
-                .baseUri(url)
-                .executionModel(BasicWebSocketConnector.ExecutionModel.NON_BLOCKING)
-                .connectAndAwait();
+        try {
+            connection = connector
+                    .baseUri(url)
+                    .executionModel(BasicWebSocketConnector.ExecutionModel.NON_BLOCKING)
+                    .connectAndAwait();
+        } catch (Exception e) {
+            LOG.error("Unable to connect to the service registry at " + wsUrlBase);
+        }
     }
 
     /**
@@ -82,7 +86,11 @@ public class IUASimulatorLifecycleBean {
      */
     @Scheduled(every = "10s")
     void run() throws JsonProcessingException {
-        connection.sendTextAndAwait(getMetadata());
+        if (connection != null) {
+            connection.sendTextAndAwait(getMetadata());
+        } else {
+            LOG.error("Unable to connect to the service registry at " + wsUrlBase);
+        }
     }
 
     /**
