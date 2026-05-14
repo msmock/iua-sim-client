@@ -70,8 +70,8 @@ public class ClientCredentialAction {
 
         Map<String, String> bodyElements = new LinkedHashMap<>();
         bodyElements.put("grant_type", "client_credentials");
-        bodyElements.put("client_id", config.clientId);
-        bodyElements.put("client_secret", config.clientSecret);
+        // bodyElements.put("client_id", config.clientId);
+        // bodyElements.put("client_secret", config.clientSecret);
         bodyElements.put("principal", config.principal);
         bodyElements.put("principal_id", config.principalId);
         bodyElements.put("scope", config.scope);
@@ -81,7 +81,10 @@ public class ClientCredentialAction {
 
         String requestBody = formEncode(bodyElements);
 
-        String authHeader = "Basic bXktYXBwOm15LWFwcC1zZWNyZXQtMTIz";
+        // put client_id and client_secret in the Authentication header
+        String authHeader = buildAuthHeader(config.clientId, config.clientSecret);
+
+        // add digest header for http signature
         String contentDigestHeader = "sha-512=:" + Base64.getEncoder().encodeToString(
                 DigestUtils.sha512(requestBody)
         ) + ":";
@@ -132,6 +135,7 @@ public class ClientCredentialAction {
                 .build();
 
         HttpResponse<String> response;
+
         try {
             response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
@@ -237,6 +241,17 @@ public class ClientCredentialAction {
             builder.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
         }
         return builder.toString();
+    }
+
+    /**
+     * Build the Authorization header for client credential flow.
+     *
+     * @return encoded authorization header with content clientId:clientSecret
+     */
+    private String buildAuthHeader(String clientId, String clientSecret) {
+        String credentials = clientId + ":" + clientSecret;
+        String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
+        return "Basic " + encodedCredentials;
     }
 
     /**
