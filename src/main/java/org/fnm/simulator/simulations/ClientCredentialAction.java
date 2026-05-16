@@ -19,6 +19,7 @@ import net.ihe.gazelle.simulation.business.callback.*;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.fnm.simulator.IUAClientSimulationService;
+import org.fnm.simulator.helper.SigningKeyHelper;
 import org.jboss.logging.Logger;
 
 import java.io.IOException;
@@ -40,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO: publish the http verification key in the SimulationSequence
+ * TODO: publish the public key for http verification in the SimulationSequence
  * <p>
  * Represents an action that performs a client credential flow in compliance with the CH:IUA standard.
  */
@@ -94,14 +95,10 @@ public class ClientCredentialAction {
                 DigestUtils.sha512(requestBody)
         ) + ":";
 
-        // TODO howto store the key for http signature
+        // get the key pair for http signature
         JWK signingKey;
         try {
-            signingKey = getECJwk();
-        } catch (IOException e) {
-            String message = "Exception from reading JWK file";
-            LOG.error(message, e);
-            return getUndefinedTransactionReport(message);
+            signingKey = SigningKeyHelper.getEcKeyPairJWK();
         } catch (ParseException e) {
             String message = "Exception from parsing JWK file";
             LOG.error(message, e);
@@ -249,7 +246,7 @@ public class ClientCredentialAction {
     }
 
     /**
-     * Build the Authorization header for client credential flow.
+     * Build the Authorization header for the client credential flow.
      *
      * @return encoded authorization header with content clientId:clientSecret
      */
@@ -260,7 +257,8 @@ public class ClientCredentialAction {
     }
 
     /**
-     * Extracts and returns the payload from a given JSON Web Token (JWT).
+     * Used in evaluation of the AuthZ Server's response. Extracts and returns the payload from
+     * a given JSON Web Token (JWT).
      *
      * @param token the JWT as a string.
      * @return the decoded payload as a JSON string.
@@ -271,7 +269,8 @@ public class ClientCredentialAction {
     }
 
     /**
-     * Extracts and returns the algorithm name from a given JSON Web Token (JWT).
+     * Used in signature verification of the AuthZ Server's response. Extracts and returns the algorithm name
+     * from the given JSON Web Token (JWT).
      *
      * @param token the JWT as a string.
      * @return the algorithm name specified in the JWT header as a string.
@@ -282,33 +281,10 @@ public class ClientCredentialAction {
     }
 
     /**
-     * Reads an RSA JSON Web Key (JWK) from a file for http signing.
+     * Used in signature verification of the AuthZ Server's response. Creates an Elliptic Curve Algorithm instance
+     * from a public key configured for this test.
      *
-     * @return the parsed RSA JWK object.
-     * @throws IOException    if an I/O error occurs while reading the file.
-     * @throws ParseException if the key content cannot be parsed into a valid JWK format.
-     */
-    private static JWK getRSAJwk() throws IOException, ParseException {
-        String key = Files.readString(Paths.get("signature-keys/JWK-RSA-pair.json"));
-        return JWK.parse(key);
-    }
-
-    /**
-     * Reads an elliptic curve (EC) JSON Web Key (JWK) from a file for http signing..
-     *
-     * @return the parsed EC JWK object.
-     * @throws IOException    if an I/O error occurs while reading the file.
-     * @throws ParseException if the key content cannot be parsed into a valid JWK format.
-     */
-    private static JWK getECJwk() throws IOException, ParseException {
-        String key = Files.readString(Paths.get("signature-keys/JWK-EC-pair.json"));
-        return JWK.parse(key);
-    }
-
-    /**
-     * Creates an Elliptic Curve Algorithm instance from config.
-     *
-     * @return an {@code Algorithm} instance configured with the RSA-256 algorithm and the parsed public key.
+     * @return an {@code Algorithm} instance configured with the ECDSA-256 algorithm and the parsed public key.
      * @throws ParseException if the JWK content cannot be properly parsed.
      * @throws JOSEException  if an error occurs during the conversion or processing of the JWK.
      */
@@ -319,7 +295,8 @@ public class ClientCredentialAction {
     }
 
     /**
-     * Creates an RSA Algorithm instance from config.
+     * Used in signature verification of the AuthZ Server's response. Creates an RSA Algorithm instance
+     * from from a public key configured for this test.
      *
      * @return an {@code Algorithm} instance configured with the RSA-256 algorithm and the parsed public key.
      * @throws ParseException if the JWK content cannot be properly parsed.

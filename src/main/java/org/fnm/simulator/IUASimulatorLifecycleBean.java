@@ -35,7 +35,7 @@ public class IUASimulatorLifecycleBean {
     @ConfigProperty(name = "version")
     String version;
 
-    // TODO How do I know the URL of the simulation service?
+    // TODO the URL of the simulation service?
     @ConfigProperty(name = "simulationServiceUrl")
     String simulationServiceUrl;
 

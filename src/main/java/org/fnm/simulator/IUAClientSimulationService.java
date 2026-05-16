@@ -12,6 +12,7 @@ import net.ihe.gazelle.simulation.business.sequence.*;
 import net.ihe.gazelle.simulation.business.setup.*;
 import net.ihe.gazelle.simulation.callback.client.technical.SimulationCallbackImpl;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.fnm.simulator.helper.SigningKeyHelper;
 import org.fnm.simulator.simulations.ClientCredentialConfig;
 import org.fnm.simulator.simulations.ClientCredentialsSimulation;
 import org.fnm.simulator.simulations.Status;
@@ -43,15 +44,6 @@ public class IUAClientSimulationService implements SimulationService {
 
     private final SimulationReportValidator validator = new SimulationReportValidator();
     private final Map<String, ClientCredentialsSimulation> simulations = new ConcurrentHashMap<>();
-
-    /**
-     *
-     */
-    public IUAClientSimulationService() {
-
-        // TODO use the 2 certificates for http and OIDC ID token signing
-        LOG.info("IUAClientSimulationService created");
-    }
 
     /**
      * @param sessionId         unique session identifier, called callback in SimulationAPI.
@@ -244,7 +236,7 @@ public class IUAClientSimulationService implements SimulationService {
         scope.setValue(requestScope);
 
         // example key to be overridden by the Authorization Server under test.
-        String key = "{\"kty\": \"RSA\",\"e\": \"AQAB\",\"use\": \"sig\",\"kid\": \"http-signing-keys\",\"alg\": \"RS256\",\"n\": \"0cWIFQS_1j03ioYCe5ZWbB6DINLsIBzw-Q3gftca6Fb6boim2BqKzpLQLDloN2KuZpbFJA70GlsJPhu5F72YFKbFPabrF11amSUUHR8UJlpwS9x57AFtEqKuxiTlb7rG2diDVqAMOdQ7n8gQEOBmhKOfnKKQyBcGIA7kfVocxSTRchmskNe_sHBXhxXH-k2vYTRLGJxSvaaGD6HX2XRtPGKnAVL7LoO8xqXUR_by9LbDBfPL4aKzcBDdzwV47hHjQvgk-rDvqownnGBPq-nRiIQjt58dAfNhTnLQUeXOEmDiUP06s4XlW5niynTYSJHDdeT29QhX3Bsdqqq3XinMpQ\"}\n";
+        String key = SigningKeyHelper.getExampleRSAPublicKey();
 
         Parameter publicKey = new Parameter();
         publicKey.setName("jwtPublicKey").setType(ParameterType.TEXT);

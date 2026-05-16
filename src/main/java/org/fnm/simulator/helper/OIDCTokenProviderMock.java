@@ -18,8 +18,7 @@ import org.fnm.simulator.IUAClientSimulationService;
 import org.jboss.logging.Logger;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.security.PublicKey;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.UUID;
@@ -62,8 +61,7 @@ public class OIDCTokenProviderMock {
     @Path("oidc-id-token-jwk")
     @Produces("application/json")
     public Response getIDTokenJWK() throws ParseException, IOException, JOSEException {
-        RSAKey jwk = simulationService.getOidcIdTokenSigningKeyPair();
-        return Response.ok(jwk.toPublicJWK()).build(); // Output the public RSA JWK parameters only
+        return Response.ok(rsaPublicKey()).build(); // Output the public RSA JWK parameters only
     }
 
     /**
@@ -82,7 +80,7 @@ public class OIDCTokenProviderMock {
      * @return the ID Token as string
      */
     private String buildIdToken(String clientId) throws ParseException, IOException, JOSEException {
-        Algorithm algorithm = loadRSAPrivateKey();
+        Algorithm algorithm = rsaPrivateKeyAlgorithm();
         JsonObject payload = buildIDTokenPayload(clientId);
         return JWT.create().withPayload(payload.toString()).sign(algorithm);
     }
@@ -105,18 +103,19 @@ public class OIDCTokenProviderMock {
         return payload;
     }
 
-    public Algorithm loadECPrivateKey() throws ParseException, IOException, JOSEException {
-        String privateKeyAsString = Files.readString(Paths.get("signature-keys/JWK-EC-pair.json"));
-        JWK privateJWK = JWK.parse(privateKeyAsString);
-        ECKey privateKey = privateJWK.toECKey();
-        return Algorithm.ECDSA256(privateKey.toECPrivateKey());
+    private Algorithm rsaPrivateKeyAlgorithm() throws ParseException, JOSEException {
+        RSAKey keyPair = JWK.parse(SigningKeyHelper.getRsaKeyPair()).toRSAKey();
+        return Algorithm.RSA256(keyPair.toRSAPrivateKey());
     }
 
-    public Algorithm loadRSAPrivateKey() throws ParseException, IOException, JOSEException {
-        String privateKeyAsString = Files.readString(Paths.get("signature-keys/JWK-RSA-pair.json"));
-        JWK privateJWK = JWK.parse(privateKeyAsString);
-        RSAKey privateKey = privateJWK.toRSAKey();
-        return Algorithm.RSA256(privateKey.toRSAPrivateKey());
+    private RSAKey rsaPublicKey() throws ParseException, JOSEException {
+        RSAKey keyPair = JWK.parse(SigningKeyHelper.getRsaKeyPair()).toRSAKey();
+        return keyPair.toPublicJWK();
+    }
+
+    private ECKey ecPublicKey() throws ParseException, JOSEException {
+        ECKey keyPair = JWK.parse(SigningKeyHelper.getEcKeyPair()).toECKey();
+        return keyPair.toPublicJWK();
     }
 
 }
