@@ -1,6 +1,9 @@
 package org.fnm.simulator.simulations;
 
+import jakarta.inject.Inject;
 import net.ihe.gazelle.simulation.business.callback.TransactionReport;
+import org.fnm.simulator.IUAClientSimulationService;
+import org.jboss.logging.Logger;
 
 import java.time.Instant;
 import java.util.List;
@@ -9,6 +12,11 @@ import java.util.List;
  * The simulation entry point. Creates the configuration and action objects and runs the simulation.
  */
 public class ClientCredentialsSimulation {
+
+    private static final Logger LOG = Logger.getLogger(ClientCredentialsSimulation.class);
+
+    @Inject
+    IUAClientSimulationService simulationService;
 
     public Status status = Status.READY;
     public final Instant createdAt = Instant.now();

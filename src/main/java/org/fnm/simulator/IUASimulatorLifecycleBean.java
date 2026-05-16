@@ -27,7 +27,7 @@ import java.util.UUID;
 @ApplicationScoped
 public class IUASimulatorLifecycleBean {
 
-    private static final Logger LOG = Logger.getLogger("IUASimulatorLifecycleBean");
+    private static final Logger LOG = Logger.getLogger(IUASimulatorLifecycleBean.class);
 
     @ConfigProperty(name = "websocket.url.base")
     String wsUrlBase;

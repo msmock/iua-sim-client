@@ -9,6 +9,7 @@ import net.ihe.gazelle.simulation.business.setup.SwitchToExecution;
 import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.setup.SimulationRequestDTO;
 import net.ihe.gazelle.simulation.jaxrs.api.technical.ws.SimulationAPI;
 import org.fnm.simulator.IUAClientSimulationService;
+import org.jboss.logging.Logger;
 
 import java.util.List;
 import java.util.zip.CRC32;
@@ -16,6 +17,8 @@ import java.util.zip.CRC32;
 
 @Path("")
 public class IUAClientSimulatorAPI implements SimulationAPI {
+
+    private static final Logger LOG = Logger.getLogger(IUAClientSimulatorAPI.class);
 
     @Inject
     IUAClientSimulationService simulationService;
@@ -51,7 +54,9 @@ public class IUAClientSimulatorAPI implements SimulationAPI {
     }
 
     /**
+     *
      * run the simulation with the session id
+     *
      * @param simulationSessionId the session id of the simulation
      * @return the SwitchToExecution
      */

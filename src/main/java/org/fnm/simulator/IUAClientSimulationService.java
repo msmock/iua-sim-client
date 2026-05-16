@@ -3,6 +3,10 @@ package org.fnm.simulator;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import io.quarkus.logging.Log;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.runtime.jackson.InstantSerializer;
@@ -24,8 +28,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -44,6 +50,31 @@ public class IUAClientSimulationService implements SimulationService {
     private final SimulationReportValidator validator = new SimulationReportValidator();
     private final Map<String, ClientCredentialsSimulation> simulations = new ConcurrentHashMap<>();
 
+    private final RSAKey httpSigningKeyPair;
+    private final RSAKey oidcIdTokenSigningKeyPair;
+
+    /**
+     *
+     * @throws JOSEException
+     */
+    public IUAClientSimulationService() throws JOSEException {
+
+        httpSigningKeyPair = new RSAKeyGenerator(2048)
+                .keyUse(KeyUse.SIGNATURE) // Optional: specify the intended use
+                .keyID(UUID.randomUUID().toString()) // Optional: unique key ID
+                .issueTime(new Date()) // Optional: issued-at timestamp
+                .generate();
+
+        oidcIdTokenSigningKeyPair = new RSAKeyGenerator(2048)
+                .keyUse(KeyUse.SIGNATURE) // Optional: specify the intended use
+                .keyID(UUID.randomUUID().toString()) // Optional: unique key ID
+                .issueTime(new Date()) // Optional: issued-at timestamp
+                .generate();
+
+        // TODO use the 2 certificates for http and OIDC ID token signing
+        LOG.info("IUAClientSimulationService created");
+    }
+
     /**
      * @param sessionId         unique session identifier, called callback in SimulationAPI.
      * @param simulationRequest the information required for a single simulation run
@@ -51,6 +82,12 @@ public class IUAClientSimulationService implements SimulationService {
      */
     @Override
     public SetupOutcome setup(String sessionId, SimulationRequest simulationRequest) {
+
+        // Output the private and public RSA JWK parameters
+        LOG.info("JWK is "+httpSigningKeyPair);
+
+        // Output the public RSA JWK parameters only
+        LOG.info("Public key is "+ httpSigningKeyPair.toPublicJWK());
 
         // check if simulation is already running
         ClientCredentialsSimulation simulation = simulations.get(sessionId);
@@ -105,7 +142,6 @@ public class IUAClientSimulationService implements SimulationService {
         notifySimulation(simulationReport);
     }
 
-
     /**
      * @param report the simulation report to be send to the test platform
      */
@@ -121,7 +157,7 @@ public class IUAClientSimulationService implements SimulationService {
             SimpleModule timeModule = new SimpleModule();
             timeModule.addSerializer(Instant.class, new InstantSerializer());
             mapper.registerModule(timeModule);
-            mapper.disable(MapperFeature.REQUIRE_HANDLERS_FOR_JAVA8_TIMES);
+            mapper.disable(MapperFeature.REQUIRE_HANDLERS_FOR_JAVA8_TIMES); // TODO improve and register handler
             mapper.disable(MapperFeature.REQUIRE_HANDLERS_FOR_JAVA8_OPTIONALS);
 
             String result = mapper.writeValueAsString(report);
@@ -235,6 +271,7 @@ public class IUAClientSimulationService implements SimulationService {
         scope.setName("scope").setType(ParameterType.TEXT);
         scope.setValue(requestScope);
 
+        // example key to be overridden by the Authorization Server under test.
         String key = "{\"kty\": \"RSA\",\"e\": \"AQAB\",\"use\": \"sig\",\"kid\": \"http-signing-keys\",\"alg\": \"RS256\",\"n\": \"0cWIFQS_1j03ioYCe5ZWbB6DINLsIBzw-Q3gftca6Fb6boim2BqKzpLQLDloN2KuZpbFJA70GlsJPhu5F72YFKbFPabrF11amSUUHR8UJlpwS9x57AFtEqKuxiTlb7rG2diDVqAMOdQ7n8gQEOBmhKOfnKKQyBcGIA7kfVocxSTRchmskNe_sHBXhxXH-k2vYTRLGJxSvaaGD6HX2XRtPGKnAVL7LoO8xqXUR_by9LbDBfPL4aKzcBDdzwV47hHjQvgk-rDvqownnGBPq-nRiIQjt58dAfNhTnLQUeXOEmDiUP06s4XlW5niynTYSJHDdeT29QhX3Bsdqqq3XinMpQ\"}\n";
 
         Parameter publicKey = new Parameter();
@@ -251,6 +288,14 @@ public class IUAClientSimulationService implements SimulationService {
         sequence.setTransactions(List.of("Get Access Token [ITI-71]"));
 
         return sequence;
+    }
+
+    public RSAKey getHttpSigningKeyPair() {
+        return httpSigningKeyPair;
+    }
+
+    public RSAKey getOidcIdTokenSigningKeyPair () {
+        return oidcIdTokenSigningKeyPair;
     }
 
 }

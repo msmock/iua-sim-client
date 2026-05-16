@@ -14,9 +14,11 @@ import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
 
+import jakarta.inject.Inject;
 import net.ihe.gazelle.simulation.business.callback.*;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.fnm.simulator.IUAClientSimulationService;
 import org.jboss.logging.Logger;
 
 import java.io.IOException;
@@ -46,6 +48,9 @@ public class ClientCredentialAction {
 
     private static final Logger LOG = Logger.getLogger(ClientCredentialAction.class);
 
+    @Inject
+    IUAClientSimulationService simulationService;
+
     // the simulation parameters
     private final ClientCredentialConfig config;
 
@@ -68,10 +73,13 @@ public class ClientCredentialAction {
 
         LOG.info("Perform post request to authZ server");
 
+
+        // put client_id and client_secret in the Authentication header
+        String authHeader = buildAuthHeader(config.clientId, config.clientSecret);
+
+        // add the other parameter to the body
         Map<String, String> bodyElements = new LinkedHashMap<>();
         bodyElements.put("grant_type", "client_credentials");
-        // bodyElements.put("client_id", config.clientId);
-        // bodyElements.put("client_secret", config.clientSecret);
         bodyElements.put("principal", config.principal);
         bodyElements.put("principal_id", config.principalId);
         bodyElements.put("scope", config.scope);
@@ -80,9 +88,6 @@ public class ClientCredentialAction {
             bodyElements.put("person_id", config.person);
 
         String requestBody = formEncode(bodyElements);
-
-        // put client_id and client_secret in the Authentication header
-        String authHeader = buildAuthHeader(config.clientId, config.clientSecret);
 
         // add digest header for http signature
         String contentDigestHeader = "sha-512=:" + Base64.getEncoder().encodeToString(

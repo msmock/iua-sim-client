@@ -1,0 +1,16 @@
+meta {
+  name: Get Mock OIDC ID token JWK
+  type: http
+  seq: 10
+}
+
+get {
+  url: http://localhost:8080/mock/oidc-id-token-jwk
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

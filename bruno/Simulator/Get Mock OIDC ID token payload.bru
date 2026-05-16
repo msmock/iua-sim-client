@@ -1,0 +1,20 @@
+meta {
+  name: Get Mock OIDC ID token payload
+  type: http
+  seq: 9
+}
+
+get {
+  url: http://localhost:8080/mock/oidc-id-token-payload?client_id=my-client-id-123
+  body: none
+  auth: inherit
+}
+
+params:query {
+  client_id: my-client-id-123
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
