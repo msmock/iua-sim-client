@@ -7,9 +7,7 @@ import com.google.gson.JsonObject;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -24,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.time.Instant;
-import java.util.Date;
 import java.util.UUID;
 
 @Path("/mock")
