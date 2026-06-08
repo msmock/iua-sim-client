@@ -49,9 +49,6 @@ public class ClientCredentialAction {
 
     private static final Logger LOG = Logger.getLogger(ClientCredentialAction.class);
 
-    @Inject
-    IUAClientSimulationService simulationService;
-
     // the simulation parameters
     private final ClientCredentialConfig config;
 
@@ -73,7 +70,6 @@ public class ClientCredentialAction {
     public TransactionReport run() {
 
         LOG.info("Perform post request to authZ server");
-
 
         // put client_id and client_secret in the Authentication header
         String authHeader = buildAuthHeader(config.clientId, config.clientSecret);
@@ -232,6 +228,10 @@ public class ClientCredentialAction {
         }
     }
 
+    /**
+     * @param bodyElements map of key value pairs to be encoded in the request body
+     * @return the encoded body as a string
+     */
     private String formEncode(Map<String, String> bodyElements) {
         StringBuilder builder = new StringBuilder();
         for (Map.Entry<String, String> entry : bodyElements.entrySet()) {
@@ -308,6 +308,9 @@ public class ClientCredentialAction {
         return Algorithm.RSA256(publicKey.toRSAPublicKey());
     }
 
+    /**
+     * @return a transaction report indicating a failed test
+     */
     private TransactionReport getFailedTransactionReport(String message) {
         TransactionReport report = new TransactionReport();
         report.setResult(Result.FAILED);
@@ -317,6 +320,9 @@ public class ClientCredentialAction {
         return report;
     }
 
+    /**
+     * @return a transaction report indicating an undefined test result caused by an error the simulator code.
+     */
     private TransactionReport getUndefinedTransactionReport(String message) {
         TransactionReport report = new TransactionReport();
         report.setResult(Result.UNDEFINED);

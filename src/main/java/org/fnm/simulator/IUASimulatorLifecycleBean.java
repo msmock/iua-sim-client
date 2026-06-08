@@ -53,19 +53,8 @@ public class IUASimulatorLifecycleBean {
      * @throws JsonProcessingException never happens
      */
     void onStart(@Observes StartupEvent ev) throws JsonProcessingException {
-
         LOG.info("The application is starting...");
-
-        final String url = wsUrlBase + "/" + instanceId + "/" + replicaId;
-
-        try {
-            connection = connector
-                    .baseUri(url)
-                    .executionModel(BasicWebSocketConnector.ExecutionModel.NON_BLOCKING)
-                    .connectAndAwait();
-        } catch (Exception e) {
-            LOG.error("Unable to connect to the service registry at " + wsUrlBase);
-        }
+        openConnection();
     }
 
     /**
@@ -86,11 +75,17 @@ public class IUASimulatorLifecycleBean {
      */
     @Scheduled(every = "10s")
     void run() throws JsonProcessingException {
-        if (connection != null) {
+
+        if (connection == null || !connection.isOpen()) {
+            openConnection();
+        }
+
+        if (connection != null && connection.isOpen()) {
             connection.sendTextAndAwait(getMetadata());
         } else {
-            LOG.error("Unable to connect to the service registry at " + wsUrlBase);
+            LOG.error("Unable to send metadata to the service registry");
         }
+
     }
 
     /**
@@ -123,6 +118,21 @@ public class IUASimulatorLifecycleBean {
         registration.set("providedInterfaces", providedInterfaces);
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(registration);
+    }
+
+    private void openConnection() {
+
+        final String url = wsUrlBase + "/" + instanceId + "/" + replicaId;
+
+        try {
+            connection = connector
+                    .baseUri(url)
+                    .executionModel(BasicWebSocketConnector.ExecutionModel.NON_BLOCKING)
+                    .connectAndAwait();
+        } catch (Exception e) {
+            connection = null;
+            LOG.error("Unable to connect to the service registry at " + wsUrlBase);
+        }
     }
 
 }

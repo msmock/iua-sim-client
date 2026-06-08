@@ -38,6 +38,9 @@ public class ClientCredentialConfig {
     public String tokenEndpointUrl;
     public String jwtPublicKey;
 
+    /**
+     *
+     */
     public ClientCredentialConfig(String sessionId, SimulationRequest simulationRequest) {
 
         this.sessionId = sessionId;
@@ -76,6 +79,9 @@ public class ClientCredentialConfig {
         }
     }
 
+    /**
+     * Validate the configuration.
+     */
     public AdditionalInstructions validate() {
 
         StringBuilder builder = new StringBuilder();

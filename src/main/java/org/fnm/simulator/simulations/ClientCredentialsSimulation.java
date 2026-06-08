@@ -15,9 +15,6 @@ public class ClientCredentialsSimulation {
 
     private static final Logger LOG = Logger.getLogger(ClientCredentialsSimulation.class);
 
-    @Inject
-    IUAClientSimulationService simulationService;
-
     public Status status = Status.READY;
     public final Instant createdAt = Instant.now();
 

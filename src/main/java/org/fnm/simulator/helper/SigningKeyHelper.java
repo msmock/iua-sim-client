@@ -41,26 +41,56 @@ public class SigningKeyHelper {
             { "kty": "RSA",
               "e": "AQAB",
               "use": "sig",
-              "kid": "jwt-signing-keys",
+              "kid": "public key example for jwt verification",
               "alg": "RS256","n":
               "0cWIFQS_1j03ioYCe5ZWbB6DINLsIBzw-Q3gftca6Fb6boim2BqKzpLQLDloN2KuZpbFJA70GlsJPhu5F72YFKbFPabrF11amSUUHR8UJlpwS9x57AFtEqKuxiTlb7rG2diDVqAMOdQ7n8gQEOBmhKOfnKKQyBcGIA7kfVocxSTRchmskNe_sHBXhxXH-k2vYTRLGJxSvaaGD6HX2XRtPGKnAVL7LoO8xqXUR_by9LbDBfPL4aKzcBDdzwV47hHjQvgk-rDvqownnGBPq-nRiIQjt58dAfNhTnLQUeXOEmDiUP06s4XlW5niynTYSJHDdeT29QhX3Bsdqqq3XinMpQ"
             }
             """;
 
+    /**
+     * @return the EC key pair.
+     */
     public static String getEcKeyPair() {
         return ecKeyPair;
     }
 
+    /**
+     * @return the EC key pair as JWK.
+     * @throws ParseException if the definition above is wrong, and the key pair cannot be parsed.
+     */
     public static JWK getEcKeyPairJWK() throws ParseException {
         return JWK.parse(ecKeyPair);
     }
 
+    /**
+     * @return the public part of the EC key pair as JWK.
+     * @throws ParseException if the definition above is wrong, and the key pair cannot be parsed.
+     */
+    public static JWK getEcPublicKeyJWK() throws ParseException {
+        return getEcKeyPairJWK().toPublicJWK();
+    }
+
+    /**
+     * @return the RSA key pair.
+     */
     public static String getRsaKeyPair() {
         return rsaKeyPair;
     }
 
+    /**
+     * @return the RSA key pair as JWK.
+     * @throws ParseException if the definition above is wrong, and the key pair cannot be parsed.
+     */
     public static JWK getRSAKeyPairJWK() throws ParseException {
         return JWK.parse(rsaKeyPair);
+    }
+
+    /**
+     * @return the public part of the RSA key pair as JWK.
+     * @throws ParseException if the definition above is wrong, and the key pair cannot be parsed.
+     */
+    public static JWK getRSAPublicKeyJWK() throws ParseException {
+        return getRSAKeyPairJWK().toPublicJWK();
     }
 
     /**

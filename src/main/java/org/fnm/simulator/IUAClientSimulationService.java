@@ -248,8 +248,24 @@ public class IUAClientSimulationService implements SimulationService {
         testedRole.setName("CH:IUA Server");
         sequence.setTestedRoles(List.of(testedRole));
 
-        sequence.setStandards(List.of("CH:IUA Get Access Token [ITI-71]"));
+        sequence.setStandards(List.of(
+            "CH:IUA Get Access Token [ITI-71]",
+            "RFC-9421 HTTP Message Signatures",
+            "OAuth 2.1 draft-ietf-oauth-v2-1-15",
+            "RFC 7519 JSON Web Token (JWT)",
+            "RFC 7515 JSON Web Signature (JWS)",
+            "and Standards referenced therein"
+        ));
+
         sequence.setTransactions(List.of("Get Access Token [ITI-71]"));
+
+        sequence.setShortDescription("Sequence for the ITI-71 client credential flow.");
+
+        sequence.setDescription("""
+                        Sequence for the client credential flow of the ITI-71 transaction.
+                        In this sequence, the client sends a http POST request to the IUA Server to get an access token.
+                        The http request is signed using using http signature as defined in RFC-9421 the private key of the client simulator and shall be verified by the server.
+                        """);
 
         return sequence;
     }
