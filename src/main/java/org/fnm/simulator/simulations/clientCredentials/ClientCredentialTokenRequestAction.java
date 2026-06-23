@@ -1,4 +1,4 @@
-package org.fnm.simulator.simulations;
+package org.fnm.simulator.simulations.clientCredentials;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -14,11 +14,9 @@ import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
 
-import jakarta.inject.Inject;
 import net.ihe.gazelle.simulation.business.callback.*;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.fnm.simulator.IUAClientSimulationService;
 import org.fnm.simulator.helper.SigningKeyHelper;
 import org.jboss.logging.Logger;
 
@@ -29,8 +27,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.SignatureException;
 import java.text.ParseException;
 import java.time.Duration;
@@ -42,12 +38,13 @@ import java.util.Map;
 
 /**
  * TODO: publish the public key for http verification in the SimulationSequence
+ *
  * <p>
  * Represents an action that performs a client credential flow in compliance with the CH:IUA standard.
  */
-public class ClientCredentialAction {
+public class ClientCredentialTokenRequestAction {
 
-    private static final Logger LOG = Logger.getLogger(ClientCredentialAction.class);
+    private static final Logger LOG = Logger.getLogger(ClientCredentialTokenRequestAction.class);
 
     // the simulation parameters
     private final ClientCredentialConfig config;
@@ -60,7 +57,7 @@ public class ClientCredentialAction {
      *
      * @param config the configuration parameters for the client credential flow.
      */
-    public ClientCredentialAction(ClientCredentialConfig config) {
+    public ClientCredentialTokenRequestAction(ClientCredentialConfig config) {
         this.config = config;
     }
 

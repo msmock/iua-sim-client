@@ -10,11 +10,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import net.ihe.gazelle.simulation.business.callback.*;
 import net.ihe.gazelle.simulation.business.sequence.*;
 import net.ihe.gazelle.simulation.business.setup.*;
-import net.ihe.gazelle.simulation.callback.client.technical.SimulationCallbackImpl;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.fnm.simulator.helper.SigningKeyHelper;
-import org.fnm.simulator.simulations.ClientCredentialConfig;
-import org.fnm.simulator.simulations.ClientCredentialsSimulation;
+import org.fnm.simulator.simulations.clientCredentials.ClientCredentialConfig;
+import org.fnm.simulator.simulations.clientCredentials.ClientCredentialsSimulation;
 import org.fnm.simulator.simulations.Status;
 import org.jboss.logging.Logger;
 
@@ -46,6 +45,8 @@ public class IUAClientSimulationService implements SimulationService {
     private final Map<String, ClientCredentialsSimulation> simulations = new ConcurrentHashMap<>();
 
     /**
+     * TODO: support simulation of authorization code flow
+     *
      * @param sessionId         unique session identifier, called callback in SimulationAPI.
      * @param simulationRequest the information required for a single simulation run
      * @return the SetupOutcome
@@ -153,15 +154,6 @@ public class IUAClientSimulationService implements SimulationService {
     }
 
     /**
-     * TODO: This alternative is preferred from gazelle simulation module but does not work. No class def found for RestClientBuilder
-     */
-    public void notifySimulationAlt(SimulationReport report) {
-        String callbackURL = callbackURLBase + "?session=" + report.getUuid();
-        SimulationCallbackImpl impl = new SimulationCallbackImpl(callbackURL);
-        impl.notifySimulation(report);
-    }
-
-    /**
      * Periodically check for finished and orphaned simulations and removes them from the map.
      */
     @Scheduled(every = "10s")
@@ -203,9 +195,9 @@ public class IUAClientSimulationService implements SimulationService {
         simulationRole.setType(RoleType.INITIATOR);
         sequence.setSimulatedRoles(List.of(simulationRole));
 
-        Parameter endpoint = new Parameter();
-        endpoint.setName("tokenEndpointUrl").setType(ParameterType.TEXT);
-        endpoint.setValue("http://localhost:9000/token");
+        Parameter tokenEndpoint = new Parameter();
+        tokenEndpoint.setName("token_endpoint_url").setType(ParameterType.TEXT);
+        tokenEndpoint.setValue("http://localhost:9000/token");
 
         Parameter clientId = new Parameter();
         clientId.setName("client_id").setType(ParameterType.TEXT);
@@ -223,9 +215,9 @@ public class IUAClientSimulationService implements SimulationService {
         principalId.setName("principal_id").setType(ParameterType.TEXT);
         principalId.setValue("${principal.gln}");
 
-        Parameter person = new Parameter();
-        person.setName("person_id").setType(ParameterType.TEXT);
-        person.setValue("${patient.spid}");
+        Parameter personId = new Parameter();
+        personId.setName("person_id").setType(ParameterType.TEXT);
+        personId.setValue("${patient.spid}");
 
         String requestScope = "scope=" +
                 "purpose_of_use=urn:oid:2.16.756.5.30.1.127.3.10.5|AUTO " +
@@ -239,36 +231,144 @@ public class IUAClientSimulationService implements SimulationService {
         String key = SigningKeyHelper.getExampleRSAPublicKey();
 
         Parameter publicKey = new Parameter();
-        publicKey.setName("jwtPublicKey").setType(ParameterType.TEXT);
+        publicKey.setName("jwt_public_key").setType(ParameterType.TEXT);
         publicKey.setValue(key);
 
-        simulationRole.setConfigs(List.of(endpoint, clientId, clientSecret, principal, principalId, person, scope, publicKey));
+        simulationRole.setConfigs(List.of(tokenEndpoint, clientId, clientSecret, principal, principalId, personId, scope, publicKey));
 
         TestedRole testedRole = new TestedRole();
         testedRole.setName("CH:IUA Server");
         sequence.setTestedRoles(List.of(testedRole));
 
         sequence.setStandards(List.of(
-            "CH:IUA Get Access Token [ITI-71]",
-            "RFC-9421 HTTP Message Signatures",
-            "OAuth 2.1 draft-ietf-oauth-v2-1-15",
-            "RFC 7519 JSON Web Token (JWT)",
-            "RFC 7515 JSON Web Signature (JWS)",
-            "and Standards referenced therein"
+                "CH:IUA Get Access Token [ITI-71]",
+                "RFC-9421 HTTP Message Signatures",
+                "OAuth 2.1 draft-ietf-oauth-v2-1-15",
+                "RFC 7519 JSON Web Token (JWT)",
+                "RFC 7515 JSON Web Signature (JWS)",
+                "and Standards referenced therein"
         ));
 
         sequence.setTransactions(List.of("Get Access Token [ITI-71]"));
 
         sequence.setShortDescription("Sequence for the ITI-71 client credential flow.");
 
-        sequence.setDescription("""
-                        Sequence for the client credential flow of the ITI-71 transaction.
-                        In this sequence, the client sends a http POST request to the IUA Server to get an access token.
-                        The http request is signed using using http signature as defined in RFC-9421 the private key of the client simulator and shall be verified by the server.
-                        """);
+        sequence.setDescription(
+                "Sequence for the client credential flow of the ITI-71 transaction." +
+                "In this sequence, the client sends a http POST request to the IUA Server to get an access token." +
+                "The http request is signed using using http signature as defined in RFC-9421 the private key of the client simulator."
+                );
 
         return sequence;
     }
 
 
+    /**
+     * @return the SimulationSequence definition for the IUA Client Credential flow
+     */
+    public SimulationSequence getAuthorizationCodeSequence() {
+
+        SimulationSequence sequence = new SimulationSequence();
+        sequence.setId("0064e130-cf31-40f5-ad62-163af639b360");
+
+        SimulatedRole simulationRole = new SimulatedRole();
+        simulationRole.setName("CH:IUA Client");
+        simulationRole.setType(RoleType.INITIATOR);
+        sequence.setSimulatedRoles(List.of(simulationRole));
+
+        Parameter codeEndpoint = new Parameter();
+        codeEndpoint.setName("code_endpoint_url").setType(ParameterType.TEXT);
+        codeEndpoint.setValue("http://localhost:9000/authorize");
+
+        Parameter tokenEndpoint = new Parameter();
+        tokenEndpoint.setName("token_endpoint_url").setType(ParameterType.TEXT);
+        tokenEndpoint.setValue("http://localhost:9000/token");
+
+        Parameter clientId = new Parameter();
+        clientId.setName("client_id").setType(ParameterType.TEXT);
+        clientId.setValue("${client-id}}");
+
+        Parameter clientSecret = new Parameter();
+        clientSecret.setName("client_secret").setType(ParameterType.TEXT);
+        clientSecret.setValue("${client-secret}}");
+
+        // the scope to be overridden in th test setup.
+        String requestScope = "scope=" +
+                "purpose_of_use=urn:oid:2.16.756.5.30.1.127.3.10.5|NORMAL " +
+                "subject_role=urn:oid:2.16.756.5.30.1.127.3.10.6|HCP";
+
+        Parameter scope = new Parameter();
+        scope.setName("scope").setType(ParameterType.TEXT);
+        scope.setValue(requestScope);
+
+        // the patient epr to be accessed, required for extended access token
+        Parameter personId = new Parameter();
+        personId.setName("person_id").setType(ParameterType.TEXT);
+        personId.setValue("${patient.spid}");
+
+        // principal claim, only for role ASS
+        Parameter principal = new Parameter();
+        principal.setName("principal").setType(ParameterType.TEXT);
+        principal.setValue("${principal.name}");
+
+        Parameter principalId = new Parameter();
+        principalId.setName("principal_id").setType(ParameterType.TEXT);
+        principalId.setValue("${principal.gln}");
+
+        // optional group claim, only for role HCP and ASS
+        Parameter group = new Parameter();
+        group.setName("group").setType(ParameterType.TEXT);
+        group.setValue("${group.name}");
+
+        Parameter groupId = new Parameter();
+        groupId.setName("group_id").setType(ParameterType.TEXT);
+        groupId.setValue("${group.name}");
+
+        // example key to be overridden by the Authorization Server under test.
+        String key = SigningKeyHelper.getExampleRSAPublicKey();
+
+        Parameter serverPublicKey = new Parameter();
+        serverPublicKey.setName("jwt_public_key").setType(ParameterType.TEXT);
+        serverPublicKey.setValue(key);
+
+        simulationRole.setConfigs(List.of(
+                codeEndpoint,
+                tokenEndpoint,
+                clientId,
+                clientSecret,
+                scope,
+                personId,
+                principal,
+                principalId,
+                principal,
+                principalId,
+                serverPublicKey));
+
+        TestedRole testedRole = new TestedRole();
+        testedRole.setName("CH:IUA Server");
+        sequence.setTestedRoles(List.of(testedRole));
+
+        sequence.setStandards(List.of(
+                "CH:IUA Get Access Token [ITI-71]",
+                "RFC-9421 HTTP Message Signatures",
+                "OAuth 2.1 draft-ietf-oauth-v2-1-15",
+                "RFC 7519 JSON Web Token (JWT)",
+                "RFC 7515 JSON Web Signature (JWS)",
+                "and Standards referenced therein"
+        ));
+
+        sequence.setTransactions(List.of("Get Access Token [ITI-71]"));
+
+        sequence.setShortDescription("Sequence for the ITI-71 authorization code flow.");
+
+        sequence.setDescription(
+                "Sequence for the authorization code flow of the ITI-71 transaction." +
+                "In this sequence, the client first sends a http Get request to the IUA Server to get an authorization code." +
+                "In the second step the client sends a http POST request to the IUA Server to exchange the authorization code to an access token." +
+                "The second http request is signed using http signature as defined in RFC-9421 with the private key of the simulator."
+        );
+
+        return sequence;
+
+    }
 }

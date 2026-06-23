@@ -1,4 +1,4 @@
-package org.fnm.simulator.simulations;
+package org.fnm.simulator.simulations.clientCredentials;
 
 import net.ihe.gazelle.simulation.business.callback.Role;
 import net.ihe.gazelle.simulation.business.setup.*;
@@ -66,14 +66,14 @@ public class ClientCredentialConfig {
 
             if ((type != null) && type.equals(ParameterType.TEXT)){
                 switch (name) {
-                    case "tokenEndpointUrl" -> tokenEndpointUrl = parameter.getValue();
+                    case "token_endpoint_url" -> tokenEndpointUrl = parameter.getValue();
                     case "client_id" -> clientId = parameter.getValue();
                     case "client_secret" -> clientSecret = parameter.getValue();
                     case "principal" -> principal = parameter.getValue();
                     case "principal_id" -> principalId = parameter.getValue();
                     case "person_id" -> person = parameter.getValue();
                     case "scope" -> scope = parameter.getValue();
-                    case "jwtPublicKey" -> jwtPublicKey = parameter.getValue();
+                    case "jwt_public_key" -> jwtPublicKey = parameter.getValue();
                 }
             }
         }

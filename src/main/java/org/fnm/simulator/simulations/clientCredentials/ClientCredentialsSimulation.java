@@ -1,8 +1,7 @@
-package org.fnm.simulator.simulations;
+package org.fnm.simulator.simulations.clientCredentials;
 
-import jakarta.inject.Inject;
 import net.ihe.gazelle.simulation.business.callback.TransactionReport;
-import org.fnm.simulator.IUAClientSimulationService;
+import org.fnm.simulator.simulations.Status;
 import org.jboss.logging.Logger;
 
 import java.time.Instant;
@@ -19,11 +18,11 @@ public class ClientCredentialsSimulation {
     public final Instant createdAt = Instant.now();
 
     private final ClientCredentialConfig config;
-    private final ClientCredentialAction action;
+    private final ClientCredentialTokenRequestAction action;
 
     public ClientCredentialsSimulation(ClientCredentialConfig config) {
         this.config = config;
-        this.action = new ClientCredentialAction(config);
+        this.action = new ClientCredentialTokenRequestAction(config);
     }
 
     public TransactionReport run() {
