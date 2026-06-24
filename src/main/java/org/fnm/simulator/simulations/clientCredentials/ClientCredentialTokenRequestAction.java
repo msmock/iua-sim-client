@@ -78,8 +78,8 @@ public class ClientCredentialTokenRequestAction {
         bodyElements.put("principal_id", config.principalId);
         bodyElements.put("scope", config.scope);
 
-        if (config.person != null && !config.person.isEmpty())
-            bodyElements.put("person_id", config.person);
+        if (config.personId != null && !config.personId.isEmpty())
+            bodyElements.put("person_id", config.personId);
 
         String requestBody = formEncode(bodyElements);
 

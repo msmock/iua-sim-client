@@ -29,13 +29,13 @@ public class ClientCredentialConfig {
     public List<Parameter> simulationParameters;
 
     // parameter read from setup
+    public String tokenEndpointUrl;
     public String clientId;
     public String clientSecret;
+    public String scope;
+    public String personId;
     public String principal;
     public String principalId;
-    public String person;
-    public String scope;
-    public String tokenEndpointUrl;
     public String jwtPublicKey;
 
     /**
@@ -69,10 +69,10 @@ public class ClientCredentialConfig {
                     case "token_endpoint_url" -> tokenEndpointUrl = parameter.getValue();
                     case "client_id" -> clientId = parameter.getValue();
                     case "client_secret" -> clientSecret = parameter.getValue();
+                    case "scope" -> scope = parameter.getValue();
+                    case "person_id" -> personId = parameter.getValue();
                     case "principal" -> principal = parameter.getValue();
                     case "principal_id" -> principalId = parameter.getValue();
-                    case "person_id" -> person = parameter.getValue();
-                    case "scope" -> scope = parameter.getValue();
                     case "jwt_public_key" -> jwtPublicKey = parameter.getValue();
                 }
             }
@@ -80,11 +80,13 @@ public class ClientCredentialConfig {
     }
 
     /**
+     *
      * Validate the configuration.
      */
     public AdditionalInstructions validate() {
 
         StringBuilder builder = new StringBuilder();
+
         if (tokenEndpointUrl == null || tokenEndpointUrl.isEmpty())
             builder.append("Token endpoint URL is not set.");
 
@@ -94,14 +96,14 @@ public class ClientCredentialConfig {
         if (clientSecret == null || clientSecret.isEmpty())
             builder.append("Client secret is not set.");
 
+        if (scope == null || scope.isEmpty())
+            builder.append("Scope is not set.");
+
         if (principal == null || principal.isEmpty())
             builder.append("Principal is not set.");
 
         if (principalId == null || principalId.isEmpty())
             builder.append("Principal id is not set.");
-
-        if (scope == null || scope.isEmpty())
-            builder.append("Scope is not set.");
 
         if (jwtPublicKey == null || jwtPublicKey.isEmpty())
             builder.append("JWT public key is not set.");
@@ -116,6 +118,10 @@ public class ClientCredentialConfig {
         }
 
         return null;
+    }
+
+    public boolean isForExtendedToken() {
+        return personId != null && !personId.isEmpty();
     }
 
 }

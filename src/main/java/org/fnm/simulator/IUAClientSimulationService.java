@@ -12,6 +12,8 @@ import net.ihe.gazelle.simulation.business.sequence.*;
 import net.ihe.gazelle.simulation.business.setup.*;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.fnm.simulator.helper.SigningKeyHelper;
+import org.fnm.simulator.simulations.authorizationCode.AuthorizationCodeConfig;
+import org.fnm.simulator.simulations.authorizationCode.AuthorizationCodeSimulation;
 import org.fnm.simulator.simulations.clientCredentials.ClientCredentialConfig;
 import org.fnm.simulator.simulations.clientCredentials.ClientCredentialsSimulation;
 import org.fnm.simulator.simulations.Status;
@@ -34,6 +36,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @ApplicationScoped
 public class IUAClientSimulationService implements SimulationService {
 
+    public static final String CLIENT_CREDENTIAL_SEQUENCE_ID = "c74f063b-fb76-405e-8fa3-b2632b5c112f";
+    public static final String AUTHORIZATION_CODE_SEQUENCE_ID = "0064e130-cf31-40f5-ad62-163af639b360";
+
     private static final Logger LOG = Logger.getLogger(IUAClientSimulationService.class);
 
     @ConfigProperty(name = "callback.url.base")
@@ -42,10 +47,11 @@ public class IUAClientSimulationService implements SimulationService {
     private final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
 
     private final SimulationReportValidator validator = new SimulationReportValidator();
-    private final Map<String, ClientCredentialsSimulation> simulations = new ConcurrentHashMap<>();
+
+    private final Map<String, ClientCredentialsSimulation> clientCredentialSimulations = new ConcurrentHashMap<>();
+    private final Map<String, AuthorizationCodeSimulation> authorizationCodeSimulations = new ConcurrentHashMap<>();
 
     /**
-     * TODO: support simulation of authorization code flow
      *
      * @param sessionId         unique session identifier, called callback in SimulationAPI.
      * @param simulationRequest the information required for a single simulation run
@@ -55,36 +61,90 @@ public class IUAClientSimulationService implements SimulationService {
     public SetupOutcome setup(String sessionId, SimulationRequest simulationRequest) {
 
         // check if simulation is already running
-        ClientCredentialsSimulation simulation = simulations.get(sessionId);
-        if (simulation != null && simulation.status == Status.RUNNING) {
+        ClientCredentialsSimulation clientCredentialsSimulation = clientCredentialSimulations.get(sessionId);
+        if (clientCredentialsSimulation != null && clientCredentialsSimulation.status == Status.RUNNING) {
             String message = "Simulation with session id " + sessionId + " is already running.";
             throw new AlreadyRunningException(message);
         }
 
-        ClientCredentialConfig config = new ClientCredentialConfig(sessionId, simulationRequest);
-        AdditionalInstructions validation = config.validate();
+        AuthorizationCodeSimulation authorizationCodeSimulation = authorizationCodeSimulations.get(sessionId);
+        if (authorizationCodeSimulation != null && authorizationCodeSimulation.status == Status.RUNNING) {
+            String message = "Simulation with session id " + sessionId + " is already running.";
+            throw new AlreadyRunningException(message);
+        }
 
-        if (validation != null)
-            return validation;
+        String sequenceId = simulationRequest.getSequenceId();
 
-        simulation = new ClientCredentialsSimulation(config);
-        simulations.put(sessionId, simulation);
+        if (sequenceId.equals(CLIENT_CREDENTIAL_SEQUENCE_ID)) {
 
-        // return "ready to go"
-        AdditionalInstructions additionalInstructions = new AdditionalInstructions();
-        additionalInstructions.setSimulationId(simulationRequest.getSequenceId());
-        additionalInstructions.setInstruction("Test is initialized and can be started!");
+            ClientCredentialConfig config = new ClientCredentialConfig(sessionId, simulationRequest);
+            AdditionalInstructions validation = config.validate();
 
-        return additionalInstructions; // new SwitchToExecution();
+            if (validation != null) return validation;
+
+            clientCredentialsSimulation = new ClientCredentialsSimulation(config);
+            clientCredentialSimulations.put(sessionId, clientCredentialsSimulation);
+
+            // return "ready to go"
+            AdditionalInstructions additionalInstructions = new AdditionalInstructions();
+            additionalInstructions.setSimulationId(sequenceId);
+
+            StringBuilder message = new StringBuilder();
+            message.append("Test for the client credentials sequence is initialized and can be started! ");
+
+            if (config.isForExtendedToken())
+                message.append("Since the person_id is set, an extended access token will be requested.");
+            else
+                message.append("Since the person_id is not set, a basic access token will be requested.");
+
+            additionalInstructions.setInstruction(message.toString());
+            return additionalInstructions; // new SwitchToExecution();
+        }
+
+        if (sequenceId.equals(AUTHORIZATION_CODE_SEQUENCE_ID)) {
+
+            AuthorizationCodeConfig config = new AuthorizationCodeConfig(sessionId, simulationRequest);
+            AdditionalInstructions validation = config.validate();
+
+            if (validation != null) return validation;
+
+            authorizationCodeSimulation = new AuthorizationCodeSimulation(config);
+            authorizationCodeSimulations.put(sessionId, authorizationCodeSimulation);
+
+            // return "ready to go"
+            AdditionalInstructions additionalInstructions = new AdditionalInstructions();
+            additionalInstructions.setSimulationId(sequenceId);
+
+            StringBuilder message = new StringBuilder();
+            message.append("Test for the authorization code sequence is initialized and can be started! ");
+
+            if (config.isForExtendedToken())
+                message.append("Since the person_id is set, an extended access token will be requested.");
+            else
+                message.append("Since the person_id is not set, a basic access token will be requested.");
+
+            additionalInstructions.setInstruction(message.toString());
+
+            return additionalInstructions; // new SwitchToExecution();
+        }
+
+        throw new UnknownSequenceException();
+
     }
 
+    /**
+     * TODO: support simulation of authorization code flow
+     *
+     * @param sessionId the current test session id
+     * @param callback  callback to be notified when the simulation is finished
+     */
     @Override
     public void runSimulation(String sessionId, SimulationCallback callback) {
 
-        ClientCredentialsSimulation simulation = simulations.get(sessionId);
-        if (simulation == null) {
-            throw new UnknownSequenceException();
-        }
+
+        // TODO get either the cc or the ac simulation from sessionId
+        ClientCredentialsSimulation simulation = clientCredentialSimulations.get(sessionId);
+        if (simulation == null) throw new UnknownSequenceException();
 
         LOG.info("Running simulation with session id " + sessionId);
 
@@ -162,7 +222,7 @@ public class IUAClientSimulationService implements SimulationService {
         // accepted age of simulations before being removed
         long acceptedDelayInSeconds = 10 * 60;
 
-        for (Map.Entry<String, ClientCredentialsSimulation> entry : simulations.entrySet()) {
+        for (Map.Entry<String, ClientCredentialsSimulation> entry : clientCredentialSimulations.entrySet()) {
 
             String sessionId = entry.getKey();
             ClientCredentialsSimulation simulation = entry.getValue();
@@ -170,14 +230,14 @@ public class IUAClientSimulationService implements SimulationService {
             // finished simulations
             if (simulation.status == Status.DONE) {
                 LOG.info("Remove simulation with sessionId = " + sessionId + ", timestamp =" + simulation.getCreatedAt() + " and status = " + simulation.status);
-                simulations.remove(sessionId);
+                clientCredentialSimulations.remove(sessionId);
             }
 
             // orphaned simulations
             if (simulation.status == Status.READY &&
                     simulation.getCreatedAt().plusSeconds(acceptedDelayInSeconds).isBefore(Instant.now())) {
                 LOG.info("Remove orphaned simulation with sessionId = " + sessionId + " and timestamp = " + simulation.getCreatedAt());
-                simulations.remove(sessionId, simulation);
+                clientCredentialSimulations.remove(sessionId, simulation);
             }
         }
     }
@@ -188,7 +248,7 @@ public class IUAClientSimulationService implements SimulationService {
     public SimulationSequence getClientCredentialSequence() {
 
         SimulationSequence sequence = new SimulationSequence();
-        sequence.setId("c74f063b-fb76-405e-8fa3-b2632b5c112f");
+        sequence.setId(CLIENT_CREDENTIAL_SEQUENCE_ID);
 
         SimulatedRole simulationRole = new SimulatedRole();
         simulationRole.setName("CH:IUA Client");
@@ -234,7 +294,15 @@ public class IUAClientSimulationService implements SimulationService {
         publicKey.setName("jwt_public_key").setType(ParameterType.TEXT);
         publicKey.setValue(key);
 
-        simulationRole.setConfigs(List.of(tokenEndpoint, clientId, clientSecret, principal, principalId, personId, scope, publicKey));
+        simulationRole.setConfigs(List.of(
+                tokenEndpoint,
+                clientId,
+                clientSecret,
+                scope,
+                personId,
+                principal,
+                principalId,
+                publicKey));
 
         TestedRole testedRole = new TestedRole();
         testedRole.setName("CH:IUA Server");
@@ -255,9 +323,9 @@ public class IUAClientSimulationService implements SimulationService {
 
         sequence.setDescription(
                 "Sequence for the client credential flow of the ITI-71 transaction." +
-                "In this sequence, the client sends a http POST request to the IUA Server to get an access token." +
-                "The http request is signed using using http signature as defined in RFC-9421 the private key of the client simulator."
-                );
+                        "In this sequence, the client sends a http POST request to the IUA Server to get an access token." +
+                        "The http request is signed using using http signature as defined in RFC-9421 the private key of the client simulator."
+        );
 
         return sequence;
     }
@@ -269,7 +337,7 @@ public class IUAClientSimulationService implements SimulationService {
     public SimulationSequence getAuthorizationCodeSequence() {
 
         SimulationSequence sequence = new SimulationSequence();
-        sequence.setId("0064e130-cf31-40f5-ad62-163af639b360");
+        sequence.setId(AUTHORIZATION_CODE_SEQUENCE_ID);
 
         SimulatedRole simulationRole = new SimulatedRole();
         simulationRole.setName("CH:IUA Client");
@@ -340,8 +408,8 @@ public class IUAClientSimulationService implements SimulationService {
                 personId,
                 principal,
                 principalId,
-                principal,
-                principalId,
+                group,
+                groupId,
                 serverPublicKey));
 
         TestedRole testedRole = new TestedRole();
@@ -363,9 +431,9 @@ public class IUAClientSimulationService implements SimulationService {
 
         sequence.setDescription(
                 "Sequence for the authorization code flow of the ITI-71 transaction." +
-                "In this sequence, the client first sends a http Get request to the IUA Server to get an authorization code." +
-                "In the second step the client sends a http POST request to the IUA Server to exchange the authorization code to an access token." +
-                "The second http request is signed using http signature as defined in RFC-9421 with the private key of the simulator."
+                        "In this sequence, the client first sends a http Get request to the IUA Server to get an authorization code." +
+                        "In the second step the client sends a http POST request to the IUA Server to exchange the authorization code to an access token." +
+                        "The second http request is signed using http signature as defined in RFC-9421 with the private key of the simulator."
         );
 
         return sequence;

@@ -1,0 +1,89 @@
+meta {
+  name: 2.1 CC Simulation Setup
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/simulation/v1/simulations?callback=f2ecee74-71c2-440f-b13f-3edf41fa18b1
+  body: json
+  auth: none
+}
+
+params:query {
+  callback: f2ecee74-71c2-440f-b13f-3edf41fa18b1
+}
+
+body:json {
+  {
+    "sequenceId": "c74f063b-fb76-405e-8fa3-b2632b5c112f",
+    "sequenceIdDefined": true,
+    "simulationParameters": [
+      {
+        "name": "token_endpoint_url",
+        "nameDefined": true,
+        "type": "TEXT",
+        "typeDefined": true,
+        "value": "http://localhost:9000/token",
+        "valueDefined": true
+      },
+      {
+        "name": "client_id",
+        "nameDefined": true,
+        "type": "TEXT",
+        "typeDefined": true,
+        "value": "${client-id}",
+        "valueDefined": true
+      },
+      {
+        "name": "client_secret",
+        "nameDefined": true,
+        "type": "TEXT",
+        "typeDefined": true,
+        "value": "${client-secret}",
+        "valueDefined": true
+      },
+      {
+        "name": "scope",
+        "nameDefined": true,
+        "type": "TEXT",
+        "typeDefined": true,
+        "value": "scope=purpose_of_use=urn:oid:2.16.756.5.30.1.127.3.10.5|AUTO subject_role=urn:oid:2.16.756.5.30.1.127.3.10.6|TC",
+        "valueDefined": true
+      },
+      {
+        "name": "person_id",
+        "nameDefined": true,
+        "type": "TEXT",
+        "typeDefined": true,
+        "value": "${person}",
+        "valueDefined": true
+      },
+      {
+        "name": "principal",
+        "nameDefined": true,
+        "type": "TEXT",
+        "typeDefined": true,
+        "value": "${principal}",
+        "valueDefined": true
+      },
+      {
+        "name": "principal_id",
+        "nameDefined": true,
+        "type": "TEXT",
+        "typeDefined": true,
+        "value": "${principal-id}",
+        "valueDefined": true
+      },
+      {
+        "name": "jwt_public_key",
+        "nameDefined": true,
+        "type": "TEXT",
+        "typeDefined": true,
+        "value": "{\"kty\": \"RSA\",\"e\": \"AQAB\",\"use\": \"sig\",\"kid\": \"http-signing-keys\",\"alg\": \"RS256\",\"n\": \"0cWIFQS_1j03ioYCe5ZWbB6DINLsIBzw-Q3gftca6Fb6boim2BqKzpLQLDloN2KuZpbFJA70GlsJPhu5F72YFKbFPabrF11amSUUHR8UJlpwS9x57AFtEqKuxiTlb7rG2diDVqAMOdQ7n8gQEOBmhKOfnKKQyBcGIA7kfVocxSTRchmskNe_sHBXhxXH-k2vYTRLGJxSvaaGD6HX2XRtPGKnAVL7LoO8xqXUR_by9LbDBfPL4aKzcBDdzwV47hHjQvgk-rDvqownnGBPq-nRiIQjt58dAfNhTnLQUeXOEmDiUP06s4XlW5niynTYSJHDdeT29QhX3Bsdqqq3XinMpQ\"}",
+        "valueDefined": true
+      }
+    ],
+    "timeoutSeconds": 10
+  }
+}
