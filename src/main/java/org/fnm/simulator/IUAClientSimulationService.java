@@ -140,8 +140,7 @@ public class IUAClientSimulationService implements SimulationService {
      */
     @Override
     public void runSimulation(String sessionId, SimulationCallback callback) {
-
-
+        
         // TODO get either the cc or the ac simulation from sessionId
         ClientCredentialsSimulation simulation = clientCredentialSimulations.get(sessionId);
         if (simulation == null) throw new UnknownSequenceException();
