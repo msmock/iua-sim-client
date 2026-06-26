@@ -92,22 +92,22 @@ public class AuthorizationCodeConfig {
     public AdditionalInstructions validate() {
 
         StringBuilder builder = new StringBuilder();
-        if (codeEndpointUrl == null || codeEndpointUrl.isEmpty())
+        if (codeEndpointUrl == null || codeEndpointUrl.isBlank())
             builder.append("Authorization code endpoint URL is not set.");
 
-        if (tokenEndpointUrl == null || tokenEndpointUrl.isEmpty())
+        if (tokenEndpointUrl == null || tokenEndpointUrl.isBlank())
             builder.append("Token endpoint URL is not set.");
 
-        if (clientId == null || clientId.isEmpty())
+        if (clientId == null || clientId.isBlank())
             builder.append("Client id is not set.");
 
-        if (clientSecret == null || clientSecret.isEmpty())
+        if (clientSecret == null || clientSecret.isBlank())
             builder.append("Client secret is not set.");
 
-        if (scope == null || scope.isEmpty())
+        if (scope == null || scope.isBlank())
             builder.append("Scope is not set.");
 
-        if (jwtPublicKey == null || jwtPublicKey.isEmpty())
+        if (jwtPublicKey == null || jwtPublicKey.isBlank())
             builder.append("JWT public key is not set.");
 
 

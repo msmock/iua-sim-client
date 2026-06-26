@@ -194,6 +194,8 @@ public class ClientCredentialTokenRequestAction {
             report.setStandards(List.of("CH:ITI-71", "HTTP/1.1"));
             report.setInitiator(config.initiator);
             report.setResponder(config.responder);
+            report.setTransaction("CH:IUA Client Credential Flow [ITI-71]");
+            report.setStandards(List.of("CH:IUA"));
 
             Message responseMessage = new Message();
             responseMessage.setName("Get Access Token Response");

@@ -5,7 +5,6 @@ import org.fnm.simulator.simulations.Status;
 import org.jboss.logging.Logger;
 
 import java.time.Instant;
-import java.util.List;
 
 /**
  * The simulation entry point. Creates the configuration and action objects and runs the simulation.
@@ -28,8 +27,6 @@ public class ClientCredentialsSimulation {
     public TransactionReport run() {
         status = Status.RUNNING;
         TransactionReport transactionReport = action.run();
-        transactionReport.setTransaction("CH:IUA Client Credential Flow [ITI-71]");
-        transactionReport.setStandards(List.of("CH:IUA"));
         status = Status.DONE;
         return transactionReport;
     }

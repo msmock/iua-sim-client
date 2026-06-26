@@ -2,6 +2,11 @@ package org.fnm.simulator.simulations.authorizationCode;
 
 public class AuthorizationCodeTokenRequestAction {
 
-    //TODO: implement me
+    private final AuthorizationCodeConfig config;
+
+    public AuthorizationCodeTokenRequestAction(AuthorizationCodeConfig config) {
+        //TODO: implement me
+        this.config = config;
+    }
 
 }

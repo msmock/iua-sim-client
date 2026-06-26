@@ -87,29 +87,29 @@ public class ClientCredentialConfig {
 
         StringBuilder builder = new StringBuilder();
 
-        if (tokenEndpointUrl == null || tokenEndpointUrl.isEmpty())
+        if (tokenEndpointUrl == null || tokenEndpointUrl.isBlank())
             builder.append("Token endpoint URL is not set.");
 
-        if (clientId == null || clientId.isEmpty())
+        if (clientId == null || clientId.isBlank())
             builder.append("Client id is not set.");
 
-        if (clientSecret == null || clientSecret.isEmpty())
+        if (clientSecret == null || clientSecret.isBlank())
             builder.append("Client secret is not set.");
 
-        if (scope == null || scope.isEmpty())
+        if (scope == null || scope.isBlank())
             builder.append("Scope is not set.");
 
-        if (principal == null || principal.isEmpty())
+        if (principal == null || principal.isBlank())
             builder.append("Principal is not set.");
 
-        if (principalId == null || principalId.isEmpty())
+        if (principalId == null || principalId.isBlank())
             builder.append("Principal id is not set.");
 
-        if (jwtPublicKey == null || jwtPublicKey.isEmpty())
+        if (jwtPublicKey == null || jwtPublicKey.isBlank())
             builder.append("JWT public key is not set.");
 
         String message = builder.toString();
-        if (!message.isEmpty()) {
+        if (!message.isBlank()) {
             LOG.error(message);
             AdditionalInstructions additionalInstructions = new AdditionalInstructions();
             additionalInstructions.setSimulationId(sequenceId);
@@ -121,7 +121,7 @@ public class ClientCredentialConfig {
     }
 
     public boolean isForExtendedToken() {
-        return personId != null && !personId.isEmpty();
+        return personId != null && !personId.isBlank();
     }
 
 }

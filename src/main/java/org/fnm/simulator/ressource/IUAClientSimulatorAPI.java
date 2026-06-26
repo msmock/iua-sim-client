@@ -25,7 +25,6 @@ public class IUAClientSimulatorAPI implements SimulationAPI {
 
     @Override
     public Response getSimulationSequences() {
-        // TODO add authorization code sequence
         SimulationSequence clientCredentialSequence = simulationService.getClientCredentialSequence();
         SimulationSequence authorizationCodeSequence = simulationService.getAuthorizationCodeSequence();
         Response.ResponseBuilder builder = Response.ok(List.of(clientCredentialSequence, authorizationCodeSequence));

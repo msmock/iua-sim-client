@@ -124,7 +124,6 @@ public class IUAClientSimulationService implements SimulationService {
                 message.append("Since the person_id is not set, a basic access token will be requested.");
 
             additionalInstructions.setInstruction(message.toString());
-
             return additionalInstructions; // new SwitchToExecution();
         }
 
@@ -133,37 +132,66 @@ public class IUAClientSimulationService implements SimulationService {
     }
 
     /**
-     * TODO: support simulation of authorization code flow
-     *
      * @param sessionId the current test session id
      * @param callback  callback to be notified when the simulation is finished
      */
     @Override
     public void runSimulation(String sessionId, SimulationCallback callback) {
-        
-        // TODO get either the cc or the ac simulation from sessionId
-        ClientCredentialsSimulation simulation = clientCredentialSimulations.get(sessionId);
-        if (simulation == null) throw new UnknownSequenceException();
 
-        LOG.info("Running simulation with session id " + sessionId);
+        // get either the cc or the ac clientCredentialsSimulation from sessionId
+        ClientCredentialsSimulation clientCredentialsSimulation = clientCredentialSimulations.get(sessionId);
+        if (clientCredentialsSimulation != null) {
 
-        // run the simulation
-        TransactionReport transactionReport = simulation.run();
+            LOG.info("Running clientCredentialsSimulation with session id " + sessionId);
 
-        // build the simulation report
-        SimulationReport simulationReport = new SimulationReport();
-        simulationReport.setUuid(sessionId);
-        simulationReport.setSequenceId(simulation.getConfig().sequenceId);
-        simulationReport.setServiceName(this.getClass().getSimpleName());
-        simulationReport.setDateTime(Instant.now());
-        simulationReport.setResult(transactionReport.getResult());
-        simulationReport.setTransactionReports(List.of(transactionReport));
-        simulationReport.setServiceVersion("0.5.0");
-        simulationReport.setSimulationParameters(simulation.getConfig().simulationParameters);
+            // run the clientCredentialsSimulation
+            TransactionReport transactionReport = clientCredentialsSimulation.run();
 
-        LOG.info("Finished simulation with session id " + sessionId);
+            // build the clientCredentialsSimulation report
+            SimulationReport simulationReport = new SimulationReport();
+            simulationReport.setUuid(sessionId);
+            simulationReport.setSequenceId(clientCredentialsSimulation.getConfig().sequenceId);
+            simulationReport.setServiceName(this.getClass().getSimpleName());
+            simulationReport.setDateTime(Instant.now());
+            simulationReport.setResult(transactionReport.getResult());
+            simulationReport.setTransactionReports(List.of(transactionReport));
+            simulationReport.setServiceVersion("0.5.0");
+            simulationReport.setSimulationParameters(clientCredentialsSimulation.getConfig().simulationParameters);
 
-        notifySimulation(simulationReport);
+            LOG.info("Finished clientCredentialsSimulation with session id " + sessionId);
+
+            notifySimulation(simulationReport);
+            return;
+        }
+
+        AuthorizationCodeSimulation authorizationCodeSimulation = authorizationCodeSimulations.get(sessionId);
+        if (authorizationCodeSimulation != null) {
+
+            LOG.info("Running authorizationCodeSimulation with session id " + sessionId);
+
+            // run the clientCredentialsSimulation
+            TransactionReport transactionReport = authorizationCodeSimulation.run();
+
+            // build the clientCredentialsSimulation report
+            SimulationReport simulationReport = new SimulationReport();
+            simulationReport.setUuid(sessionId);
+            simulationReport.setSequenceId(authorizationCodeSimulation.getConfig().sequenceId);
+            simulationReport.setServiceName(this.getClass().getSimpleName());
+            simulationReport.setDateTime(Instant.now());
+            simulationReport.setResult(transactionReport.getResult());
+            simulationReport.setTransactionReports(List.of(transactionReport));
+            simulationReport.setServiceVersion("0.5.0");
+            simulationReport.setSimulationParameters(authorizationCodeSimulation.getConfig().simulationParameters);
+
+            LOG.info("Finished authorizationCodeSimulation with session id " + sessionId);
+
+            notifySimulation(simulationReport);
+            return;
+        }
+
+        // if neither clientCredentialsSimulation nor authorizationCodeSimulation is setup
+        throw new UnknownSequenceException();
+
     }
 
     /**
@@ -278,8 +306,7 @@ public class IUAClientSimulationService implements SimulationService {
         personId.setName("person_id").setType(ParameterType.TEXT);
         personId.setValue("${patient.spid}");
 
-        String requestScope = "scope=" +
-                "purpose_of_use=urn:oid:2.16.756.5.30.1.127.3.10.5|AUTO " +
+        String requestScope = "purpose_of_use=urn:oid:2.16.756.5.30.1.127.3.10.5|AUTO " +
                 "subject_role=urn:oid:2.16.756.5.30.1.127.3.10.6|TC";
 
         Parameter scope = new Parameter();
@@ -360,8 +387,7 @@ public class IUAClientSimulationService implements SimulationService {
         clientSecret.setValue("${client-secret}}");
 
         // the scope to be overridden in th test setup.
-        String requestScope = "scope=" +
-                "purpose_of_use=urn:oid:2.16.756.5.30.1.127.3.10.5|NORMAL " +
+        String requestScope = "purpose_of_use=urn:oid:2.16.756.5.30.1.127.3.10.5|NORMAL " +
                 "subject_role=urn:oid:2.16.756.5.30.1.127.3.10.6|HCP";
 
         Parameter scope = new Parameter();
