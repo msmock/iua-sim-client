@@ -17,6 +17,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import net.ihe.gazelle.simulation.business.callback.*;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.fnm.simulator.helper.GrantType;
 import org.fnm.simulator.helper.SigningKeyHelper;
 import org.jboss.logging.Logger;
 
@@ -42,9 +43,9 @@ import java.util.Map;
  * <p>
  * Represents an action that performs a client credential flow in compliance with the CH:IUA standard.
  */
-public class ClientCredentialTokenRequestAction {
+public class TokenRequestAction {
 
-    private static final Logger LOG = Logger.getLogger(ClientCredentialTokenRequestAction.class);
+    private static final Logger LOG = Logger.getLogger(TokenRequestAction.class);
 
     // the simulation parameters
     private final ClientCredentialConfig config;
@@ -57,7 +58,7 @@ public class ClientCredentialTokenRequestAction {
      *
      * @param config the configuration parameters for the client credential flow.
      */
-    public ClientCredentialTokenRequestAction(ClientCredentialConfig config) {
+    public TokenRequestAction(ClientCredentialConfig config) {
         this.config = config;
     }
 
@@ -73,12 +74,12 @@ public class ClientCredentialTokenRequestAction {
 
         // add the other parameter to the body
         Map<String, String> bodyElements = new LinkedHashMap<>();
-        bodyElements.put("grant_type", "client_credentials");
+        bodyElements.put("grant_type", GrantType.clientCredentials);
         bodyElements.put("principal", config.principal);
         bodyElements.put("principal_id", config.principalId);
         bodyElements.put("scope", config.scope);
 
-        if (config.personId != null && !config.personId.isEmpty())
+        if (config.personId != null && !config.personId.isBlank())
             bodyElements.put("person_id", config.personId);
 
         String requestBody = formEncode(bodyElements);

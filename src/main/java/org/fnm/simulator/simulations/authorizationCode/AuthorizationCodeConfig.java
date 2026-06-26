@@ -39,8 +39,11 @@ public class AuthorizationCodeConfig {
     public String principalId;
     public String group;
     public String groupId;
-
     public String jwtPublicKey;
+
+    // result from the authorization code request
+    public String authorizationCode;
+    public String state;
 
     /**
      *

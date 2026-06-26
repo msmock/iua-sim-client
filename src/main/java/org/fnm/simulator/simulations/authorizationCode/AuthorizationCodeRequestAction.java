@@ -25,8 +25,6 @@ public class AuthorizationCodeRequestAction {
     private static final Logger LOG = Logger.getLogger(AuthorizationCodeRequestAction.class);
 
     private final AuthorizationCodeConfig config;
-
-    // the java net http client
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
     public AuthorizationCodeRequestAction(AuthorizationCodeConfig config) {
@@ -43,7 +41,7 @@ public class AuthorizationCodeRequestAction {
         // put client_id and client_secret in the Authentication header
         String authHeader = buildAuthHeader(config.clientId, config.clientSecret);
 
-        // URLencode the scope value.
+        // URL encode the scope value.
         String queryParameter = "response_type=code&state=123456789&redirect_uri=http://localhost:9000/callback&scope=" +
                 URLEncoder.encode(config.scope, StandardCharsets.UTF_8);
 
@@ -73,19 +71,21 @@ public class AuthorizationCodeRequestAction {
             return getFailedTransactionReport(message);
         }
 
+        // check the status code of the response
         int statusCode = response.statusCode();
         List<Integer> redirectCodes = List.of(301, 302, 303, 307, 308);
         String reasonPhrase = redirectCodes.contains(statusCode) ? "OK" : "HTTP " + statusCode;
 
         LOG.info("Status: " + statusCode + " " + reasonPhrase);
 
+        // return failed if the status code is not a redirect code
         if (!redirectCodes.contains(statusCode)) {
             String message = "Error: AuthZ Server returned " + reasonPhrase;
             LOG.error(message);
             return getFailedTransactionReport(message);
         }
 
-        // from header get the location of the redirect message which contains the code
+        // else, get the location from header of the redirect message which contains the code
         String location = response.headers()
                 .firstValue("location")
                 .orElse(null);
@@ -104,11 +104,10 @@ public class AuthorizationCodeRequestAction {
                 .map(parameter -> parameter.split("=", 2))
                 .collect(Collectors.toMap(
                         parameter -> URLDecoder.decode(parameter[0], StandardCharsets.UTF_8),
-                        parameter -> parameter.length > 1
-                                ? URLDecoder.decode(parameter[1], StandardCharsets.UTF_8)
-                                : ""
+                        parameter -> parameter.length > 1 ? URLDecoder.decode(parameter[1], StandardCharsets.UTF_8) : ""
                 ));
 
+        // select code and state
         String authorizationCode = queryParameters.get("code");
         String state = queryParameters.get("state");
 
@@ -127,7 +126,11 @@ public class AuthorizationCodeRequestAction {
         LOG.info("Authorization code received: " + authorizationCode);
         LOG.info("State received: " + state);
 
-        // TODO return the code and state to the simulation
+        // save the code and state for later use
+        config.authorizationCode = authorizationCode;
+        config.state = state;
+
+        // build and return the transaction report
         TransactionReport report = new TransactionReport();
         report.setResult(Result.PASSED);
         report.setStandards(List.of("CH:ITI-71", "HTTP/1.1"));
@@ -135,6 +138,7 @@ public class AuthorizationCodeRequestAction {
         report.setResponder(config.responder);
         report.setTransaction("CH:IUA Authorization Code Flow [ITI-71]");
         report.setStandards(List.of("CH:IUA"));
+        report.setNote("Received authorization code:" + authorizationCode + "and state:" + state);
 
         return report;
     }

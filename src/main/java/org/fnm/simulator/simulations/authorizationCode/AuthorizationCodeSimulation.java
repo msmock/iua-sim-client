@@ -1,5 +1,6 @@
 package org.fnm.simulator.simulations.authorizationCode;
 
+import net.ihe.gazelle.simulation.business.callback.Result;
 import net.ihe.gazelle.simulation.business.callback.TransactionReport;
 import org.fnm.simulator.simulations.Status;
 import org.jboss.logging.Logger;
@@ -15,12 +16,12 @@ public class AuthorizationCodeSimulation {
 
     private final AuthorizationCodeConfig config;
     private final AuthorizationCodeRequestAction authorizationCodeRequestAction;
-    private final AuthorizationCodeTokenRequestAction  authorizationCodeTokenRequestAction;
+    private final TokenRequestAction tokenRequestAction;
 
     public AuthorizationCodeSimulation(AuthorizationCodeConfig config) {
         this.config = config;
         this.authorizationCodeRequestAction = new AuthorizationCodeRequestAction(config);
-        this.authorizationCodeTokenRequestAction = new AuthorizationCodeTokenRequestAction(config);
+        this.tokenRequestAction = new TokenRequestAction(config);
     }
 
     public TransactionReport run() {
@@ -29,10 +30,18 @@ public class AuthorizationCodeSimulation {
 
         LOG.info("Running authorizationCodeSimulation with session id " + config.sessionId);
 
-        TransactionReport report = authorizationCodeRequestAction.run();
+        TransactionReport authorizationCodeRequestReport = authorizationCodeRequestAction.run();
+        if(authorizationCodeRequestReport.getResult().equals(Result.FAILED)){
+            return authorizationCodeRequestReport;
+        }
+
+        TransactionReport tokenRequestReport = authorizationCodeRequestAction.run();
+        if(authorizationCodeRequestReport.getResult().equals(Result.FAILED)){
+            return authorizationCodeRequestReport;
+        }
 
         status = Status.DONE;
-        return report;
+        return tokenRequestReport;
     }
 
     public AuthorizationCodeConfig getConfig() {

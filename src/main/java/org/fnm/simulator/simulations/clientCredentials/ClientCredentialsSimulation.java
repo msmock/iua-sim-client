@@ -17,11 +17,11 @@ public class ClientCredentialsSimulation {
     public final Instant createdAt = Instant.now();
 
     private final ClientCredentialConfig config;
-    private final ClientCredentialTokenRequestAction action;
+    private final TokenRequestAction action;
 
     public ClientCredentialsSimulation(ClientCredentialConfig config) {
         this.config = config;
-        this.action = new ClientCredentialTokenRequestAction(config);
+        this.action = new TokenRequestAction(config);
     }
 
     public TransactionReport run() {
