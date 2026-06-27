@@ -28,6 +28,8 @@ public class OIDCTokenProviderMock {
 
     private static final Logger LOG = Logger.getLogger(OIDCTokenProviderMock.class);
 
+    private IDTokenHelper idTokenHelper = new IDTokenHelper();
+
     @Inject
     IUAClientSimulationService simulationService;
 
@@ -45,7 +47,7 @@ public class OIDCTokenProviderMock {
     @Produces("text/plain")
     public Response getIDToken(@QueryParam("client_id") String clientId) throws ParseException, IOException, JOSEException {
         LOG.info("OIDC Token Mock got id token request for client_id: " + clientId);
-        return Response.ok(buildIdToken(clientId)).build();
+        return Response.ok(idTokenHelper.buildIdToken(clientId)).build();
     }
 
     @GET
@@ -54,7 +56,7 @@ public class OIDCTokenProviderMock {
     public Response getIDTokenPayload(@QueryParam("client_id") String clientId) throws ParseException, IOException, JOSEException {
         LOG.info("OIDC Token Mock got id token payload request for client_id: " + clientId);
         Gson gson = new Gson();
-        return Response.ok(gson.toJson(buildIDTokenPayload(clientId))).build();
+        return Response.ok(gson.toJson(idTokenHelper.buildIDTokenPayload(clientId))).build();
     }
 
     @GET
@@ -72,40 +74,8 @@ public class OIDCTokenProviderMock {
         payload.addProperty("access_token", UUID.randomUUID().toString());
         payload.addProperty("token_type", "Bearer");
         payload.addProperty("expires_in", Instant.now().getEpochSecond() + 600);
-        payload.addProperty("id_token", buildIdToken(clientId));
+        payload.addProperty("id_token", idTokenHelper.buildIdToken(clientId));
         return payload;
-    }
-
-    /**
-     * @return the ID Token as string
-     */
-    private String buildIdToken(String clientId) throws ParseException, IOException, JOSEException {
-        Algorithm algorithm = rsaPrivateKeyAlgorithm();
-        JsonObject payload = buildIDTokenPayload(clientId);
-        return JWT.create().withPayload(payload.toString()).sign(algorithm);
-    }
-
-    /**
-     * Builds the ID token payload.
-     *
-     * @param clientId the client ID to be included in the payload
-     * @return ID token payload as JSON
-     */
-    private JsonObject buildIDTokenPayload(String clientId) {
-        JsonObject payload = new JsonObject();
-        payload.addProperty("iss", "http://client-simulator.org");
-        payload.addProperty("sub", "Bearer");
-        payload.addProperty("aud", clientId);
-        payload.addProperty("exp", Instant.now().getEpochSecond() + 600);
-        payload.addProperty("iat", Instant.now().getEpochSecond());
-        payload.addProperty("nonce", "n-0S6_WzA2Mj");
-        payload.addProperty("name", "Jane Doe");
-        return payload;
-    }
-
-    private Algorithm rsaPrivateKeyAlgorithm() throws ParseException, JOSEException {
-        RSAKey keyPair = JWK.parse(SigningKeyHelper.getRsaKeyPair()).toRSAKey();
-        return Algorithm.RSA256(keyPair.toRSAPrivateKey());
     }
 
     private RSAKey rsaPublicKey() throws ParseException, JOSEException {
@@ -113,9 +83,5 @@ public class OIDCTokenProviderMock {
         return keyPair.toPublicJWK();
     }
 
-    private ECKey ecPublicKey() throws ParseException, JOSEException {
-        ECKey keyPair = JWK.parse(SigningKeyHelper.getEcKeyPair()).toECKey();
-        return keyPair.toPublicJWK();
-    }
 
 }

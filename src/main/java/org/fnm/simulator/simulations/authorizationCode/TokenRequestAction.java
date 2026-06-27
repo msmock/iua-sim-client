@@ -7,16 +7,15 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.authlete.hms.SigningInfo;
 import com.authlete.hms.fapi.FapiResourceRequestSigner;
-import com.google.gson.JsonParser;
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.RSAKey;
 import net.ihe.gazelle.simulation.business.callback.Message;
 import net.ihe.gazelle.simulation.business.callback.Result;
 import net.ihe.gazelle.simulation.business.callback.TransactionReport;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.fnm.simulator.helper.GrantType;
+import org.fnm.simulator.helper.IDTokenHelper;
+import org.fnm.simulator.helper.JWTTokenHelper;
 import org.fnm.simulator.helper.SigningKeyHelper;
 import org.jboss.logging.Logger;
 
@@ -47,6 +46,9 @@ public class TokenRequestAction {
     // the java net http client
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
+    private final IDTokenHelper idTokenHelper = new IDTokenHelper();
+    private final JWTTokenHelper jwtTokenHelper = new JWTTokenHelper();
+
     public TokenRequestAction(AuthorizationCodeConfig config) {
         this.config = config;
     }
@@ -69,7 +71,17 @@ public class TokenRequestAction {
         bodyElements.put("client_id", config.clientId);
         bodyElements.put("redirect_uri", REDIRECT_URI);
         bodyElements.put("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
-        bodyElements.put("client_assertion", "TODO add client assertion");  // TODO add client assertion
+
+        // add the OIDC ID token as client assertion
+        String idToken;
+        try {
+            idToken = idTokenHelper.buildIdToken(config.clientId);
+        } catch (ParseException | IOException | JOSEException e) {
+            String message = "Exception from building id token";
+            LOG.error(message, e);
+            return getUndefinedTransactionReport(message);
+        }
+        bodyElements.put("client_assertion", idToken);
 
         if (config.personId != null && !config.personId.isBlank())
             bodyElements.put("person_id", config.personId);
@@ -165,10 +177,10 @@ public class TokenRequestAction {
         String responseBody = response.body();
         LOG.debug("Received responseBody from server :" + responseBody);
 
-        String algName = getAlgName(responseBody);
+        String algName = jwtTokenHelper.getAlgName(responseBody);
         LOG.info("Algorithm name in responseBody is : " + algName);
 
-        String responsePayload = getPayload(responseBody);
+        String responsePayload = jwtTokenHelper.getPayload(responseBody);
         LOG.info("Payload in responseBody is : " + responsePayload);
 
         try {
@@ -176,8 +188,8 @@ public class TokenRequestAction {
             Algorithm algorithm;
 
             switch (algName) {
-                case "RS256" -> algorithm = getRSAPublicAlg();
-                case "ES256" -> algorithm = getECPublicAlg();
+                case "RS256" -> algorithm = jwtTokenHelper.getRSAPublicAlg(config.jwtPublicKey);
+                case "ES256" -> algorithm = jwtTokenHelper.getECPublicAlg(config.jwtPublicKey);
                 case "HS256" -> algorithm = Algorithm.HMAC256("secret");
                 default -> {
                     String message = "Unsupported algorithm : " + algName;
@@ -288,58 +300,6 @@ public class TokenRequestAction {
             builder.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
         }
         return builder.toString();
-    }
-
-    /**
-     * Used in evaluation of the AuthZ Server's response. Extracts and returns the payload from
-     * a given JSON Web Token (JWT).
-     *
-     * @param token the JWT as a string.
-     * @return the decoded payload as a JSON string.
-     */
-    private String getPayload(String token) {
-        String decoded = new String(Base64.getUrlDecoder().decode(token.split("\\.")[1]));
-        return JsonParser.parseString(decoded).getAsJsonObject().toString();
-    }
-
-    /**
-     * Used in signature verification of the AuthZ Server's response. Extracts and returns the algorithm name
-     * from the given JSON Web Token (JWT).
-     *
-     * @param token the JWT as a string.
-     * @return the algorithm name specified in the JWT header as a string.
-     */
-    private String getAlgName(String token) {
-        String decoded = new String(Base64.getUrlDecoder().decode(token.split("\\.")[0]));
-        return JsonParser.parseString(decoded).getAsJsonObject().get("alg").getAsString();
-    }
-
-    /**
-     * Used in signature verification of the AuthZ Server's response. Creates an Elliptic Curve Algorithm instance
-     * from a public key configured for this test.
-     *
-     * @return an {@code Algorithm} instance configured with the ECDSA-256 algorithm and the parsed public key.
-     * @throws ParseException if the JWK content cannot be properly parsed.
-     * @throws JOSEException  if an error occurs during the conversion or processing of the JWK.
-     */
-    private Algorithm getECPublicAlg() throws ParseException, JOSEException {
-        String key = config.jwtPublicKey;
-        ECKey publicKey = JWK.parse(key).toECKey();
-        return Algorithm.ECDSA256(publicKey.toECPublicKey());
-    }
-
-    /**
-     * Used in signature verification of the AuthZ Server's response. Creates an RSA Algorithm instance
-     * from from a public key configured for this test.
-     *
-     * @return an {@code Algorithm} instance configured with the RSA-256 algorithm and the parsed public key.
-     * @throws ParseException if the JWK content cannot be properly parsed.
-     * @throws JOSEException  if an error occurs during the conversion or processing of the JWK.
-     */
-    private Algorithm getRSAPublicAlg() throws ParseException, JOSEException {
-        String key = config.jwtPublicKey;
-        RSAKey publicKey = JWK.parse(key).toRSAKey();
-        return Algorithm.RSA256(publicKey.toRSAPublicKey());
     }
 
 }
