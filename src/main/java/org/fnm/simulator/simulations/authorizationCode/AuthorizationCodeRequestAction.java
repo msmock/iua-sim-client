@@ -21,11 +21,12 @@ import java.util.stream.Stream;
 
 public class AuthorizationCodeRequestAction {
 
-
     private static final Logger LOG = Logger.getLogger(AuthorizationCodeRequestAction.class);
 
     private final AuthorizationCodeConfig config;
     private final HttpClient httpClient = HttpClient.newHttpClient();
+
+    public static final String REDIRECT_URI = "http://localhost:9000/callback";
 
     public AuthorizationCodeRequestAction(AuthorizationCodeConfig config) {
         this.config = config;
@@ -42,7 +43,7 @@ public class AuthorizationCodeRequestAction {
         String authHeader = buildAuthHeader(config.clientId, config.clientSecret);
 
         // URL encode the scope value.
-        String queryParameter = "response_type=code&state=123456789&redirect_uri=http://localhost:9000/callback&scope=" +
+        String queryParameter = "response_type=code&state=123456789&redirect_uri=" + REDIRECT_URI + "&scope=" +
                 URLEncoder.encode(config.scope, StandardCharsets.UTF_8);
 
         // URI uri = URI.create(config.codeEndpointUrl+"?"+URLEncoder.encode(queryParameter, StandardCharsets.UTF_8));

@@ -35,9 +35,9 @@ public class AuthorizationCodeSimulation {
             return authorizationCodeRequestReport;
         }
 
-        TransactionReport tokenRequestReport = authorizationCodeRequestAction.run();
-        if(authorizationCodeRequestReport.getResult().equals(Result.FAILED)){
-            return authorizationCodeRequestReport;
+        TransactionReport tokenRequestReport = tokenRequestAction.run();
+        if(tokenRequestReport.getResult().equals(Result.FAILED)){
+            return tokenRequestReport;
         }
 
         status = Status.DONE;

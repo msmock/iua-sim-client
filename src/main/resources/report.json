@@ -1,6 +1,6 @@
 {
   "uuid": "76431628-c91a-4dc1-8c50-93c0cdf301fe",
-  "dateTime": "2026-06-26T20:21:36.913620Z",
+  "dateTime": "2026-06-27T12:50:29.349346Z",
   "result": "PASSED",
   "serviceName": "IUAClientSimulationService",
   "serviceVersion": "0.5.0",
@@ -8,11 +8,11 @@
   "transactionReports": [
     {
       "result": "PASSED",
-      "transaction": "CH:IUA Authorization Code Flow [ITI-71]",
+      "transaction": "CH:IUA Client Credential Flow [ITI-71]",
       "standards": [
         "CH:IUA"
       ],
-      "note": "Received authorization code:fc4eb438-214c-4b9b-ab2b-0383673f072band state:123456789",
+      "note": "The JWT token is valid.",
       "initiator": {
         "name": "IUA Client",
         "configs": [],
@@ -23,12 +23,23 @@
         "configs": [],
         "simulated": false
       },
-      "messages": [],
+      "messages": [
+        {
+          "name": "Get Access Token Response",
+          "dateTime": "2026-06-27T12:50:29.349283Z",
+          "content": "ZXlKaGJHY2lPaUpTVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKSlZVRlVaWE4wVTJWeWRtVnlJaXdpYzNWaUlqb2lKSHRqYkdsbGJuUXRhV1I5SWl3aVlYVmtJam9pYUhSMGNEb3ZMMlZvY2k1amFDSXNJbWxoZENJNk1UYzRNalUyTkRZeU9Td2libUptSWpveE56Z3lOVFkwTmpJNUxDSmxlSEFpT2pFM09ESTFOalE1TWprc0ltcDBhU0k2SW1aalpESm1NR05qTFdRNE0ySXRORE0wT0MwNVlqUTFMVFJoWmpKbE56WTVaVGcwTXlJc0luTmpiM0JsSWpvaWNIVnljRzl6WlY5dlpsOTFjMlU5ZFhKdU9tOXBaRG95TGpFMkxqYzFOaTQxTGpNd0xqRXVNVEkzTGpNdU1UQXVOWHhPVDFKTlFVd2djM1ZpYW1WamRGOXliMnhsUFhWeWJqcHZhV1E2TWk0eE5pNDNOVFl1TlM0ek1DNHhMakV5Tnk0ekxqRXdMalo4U0VOUUlpd2laWGgwWlc1emFXOXVjeUk2ZXlKamFGOXBkV0VpT25zaWMzVmlhbVZqZEY5dVlXMWxJanB1ZFd4c0xDSm9iMjFsWDJOdmJXMTFibWwwZVY5cFpDSTZJaVI3Y0hKcGJtTnBjR0ZzTFdOdmJXMTFibWwwZVMxcFpIMGlmU3dpWTJoZlpYQnlJanA3SW5WelpYSmZhV1FpT201MWJHd3NJblZ6WlhKZmFXUmZjWFZoYkdsbWFXVnlJam9pZFhKdU9tZHpNVHBuYkc0aWZTd2lZMmhmWjNKdmRYQnpJanBiZXlKdVlXMWxJam9pVG1GdFpTQnZaaUJuY205MWNDQjNhWFJvSUdsa0lIVnlianB2YVdRNk1pNHlMakl1TVNJc0ltbGtJam9pZFhKdU9tOXBaRG95TGpJdU1pNHhJbjBzZXlKdVlXMWxJam9pVG1GdFpTQnZaaUJuY205MWNDQjNhWFJvSUdsa0lIVnlianB2YVdRNk1pNHlMakl1TWlJc0ltbGtJam9pZFhKdU9tOXBaRG95TGpJdU1pNHlJbjFkZlgwLlpEMWRQazY3am1WMzVoX3l6Ynk1RktDLVVDLThKOUs5SnlZSmtRX2hLcjRNclp0Z3VydElsOTNkc2JEYjE3aVdxVl9kUy0zb2VlYzhDcjJuUFpRM2tyTlpmMXpTWVI3dXAwQWRrX2lXYnE1aGZfYmd0TS1IVjdBRGFMdFdEbEFEb2FZdkNiVHFlUlRBalp5TG1ucFI5MHh3dmZVUjJKYjhYd0NVT0QybkhzWFgtMzlsN0RSY0pucVowSU5QbnJHMlFjUURoS2huR2hBUFNrNDJUbWhaWFdHU0dPTGViWUFyR3p3b1U0eUwtVU9FOWNoWjJDY3RtR2pLZm9HZkpaMGhZQWdfal8xemlHNlNXRlZfaDcyXzI2YVFBWF8tNFhyT0RkSTdjX0x3X2ZpWjBfU18wa3BXYnAyRFkxWEhkQzFEUUhoeGo4NWxQN1hFc213cUxKcmszdw==",
+          "reference": null,
+          "sender": "IUA Client",
+          "receiver": "CH:IUA Server",
+          "contentOrReference": true,
+          "nameDefined": true
+        }
+      ],
       "validationReports": [],
       "unexpectedErrors": [],
-      "standardDefined": true,
       "transactionDefined": true,
-      "existingMessagesNonNull": true
+      "existingMessagesNonNull": true,
+      "standardDefined": true
     }
   ],
   "simulationParameters": [
