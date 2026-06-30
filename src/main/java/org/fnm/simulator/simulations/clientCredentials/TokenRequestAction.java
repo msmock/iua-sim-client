@@ -36,9 +36,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TODO: publish the public key for http verification in the SimulationSequence
- *
- * <p>
  * Represents an action that performs a client credential flow in compliance with the CH:IUA standard.
  */
 public class TokenRequestAction {

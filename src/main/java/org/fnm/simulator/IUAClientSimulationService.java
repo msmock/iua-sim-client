@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.text.ParseException;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -277,54 +278,54 @@ public class IUAClientSimulationService implements SimulationService {
         SimulationSequence sequence = new SimulationSequence();
         sequence.setId(CLIENT_CREDENTIAL_SEQUENCE_ID);
 
-        Parameter tokenEndpoint = new Parameter();
+        SupportedParameter tokenEndpoint = new SupportedParameter();
         tokenEndpoint.setName("token_endpoint_url").setType(ParameterType.TEXT);
-        tokenEndpoint.setValue("http://localhost:9000/token");
+        tokenEndpoint.setDefaultValue("http://localhost:9000/token").setRequired(true);
+        tokenEndpoint.setDescription("The URL of the token endpoint of the system under test.");
 
-        Parameter clientId = new Parameter();
+        SupportedParameter clientId = new SupportedParameter();
         clientId.setName("client_id").setType(ParameterType.TEXT);
-        clientId.setValue("${client-id}}");
+        clientId.setDefaultValue("client-id").setRequired(true);
+        clientId.setDescription("The client id of the IUA client simulator.");
 
-        Parameter clientSecret = new Parameter();
-        clientSecret.setName("client_secret").setType(ParameterType.TEXT);
-        clientSecret.setValue("${client-secret}}");
+        SupportedParameter clientSecret = new SupportedParameter();
+        clientId.setName("client_secret").setType(ParameterType.TEXT);
+        clientId.setDefaultValue("client-secret").setRequired(true);
+        clientId.setDescription("The client secret of the IUA client simulator.");
 
-        Parameter principal = new Parameter();
+        SupportedParameter principal = new SupportedParameter();
         principal.setName("principal").setType(ParameterType.TEXT);
-        principal.setValue("${principal.name}");
+        principal.setDefaultValue("principal.name").setRequired(true);
+        principal.setDescription("The name of the responsible person for the request.");
 
-        Parameter principalId = new Parameter();
+        SupportedParameter principalId = new SupportedParameter();
         principalId.setName("principal_id").setType(ParameterType.TEXT);
-        principalId.setValue("${principal.gln}");
-
-        Parameter personId = new Parameter();
-        personId.setName("person_id").setType(ParameterType.TEXT);
-        personId.setValue("${patient.spid}");
+        principalId.setDefaultValue("principal.id").setRequired(true);
+        principalId.setDescription("The GLN of the responsible person for the request.");
 
         String requestScope = "purpose_of_use=urn:oid:2.16.756.5.30.1.127.3.10.5|AUTO " +
                 "subject_role=urn:oid:2.16.756.5.30.1.127.3.10.6|TC";
 
-        Parameter scope = new Parameter();
+        SupportedParameter scope = new SupportedParameter();
         scope.setName("scope").setType(ParameterType.TEXT);
-        scope.setValue(requestScope);
+        scope.setDefaultValue(requestScope).setRequired(true);
+        scope.setDescription("The scope to be requested defining the user role and purpose of use.");
+
+        SupportedParameter personId = new SupportedParameter();
+        personId.setName("person_id").setType(ParameterType.TEXT);
+        personId.setDefaultValue("patient.spid").setRequired(false);
+        personId.setDescription("The SPID of the patient dossier to be accessed, required for extended access token.");
 
         // example key to be overridden by the Authorization Server under test.
         String key = SigningKeyHelper.getExampleRSAPublicKey();
 
-        Parameter publicKey = new Parameter();
+        SupportedParameter publicKey = new SupportedParameter();
         publicKey.setName("jwt_public_key").setType(ParameterType.TEXT);
-        publicKey.setValue(key);
+        publicKey.setDefaultValue(key).setRequired(true);
+        publicKey.setDescription("The public key to verify the JWT signature of the system under test.");
 
-        SimulatedRole simulationRole = new SimulatedRole();
-        simulationRole.setName("CH:IUA Client");
-        simulationRole.setType(RoleType.INITIATOR);
-        sequence.setSimulatedRoles(List.of(simulationRole));
-
-        // TODO add the public keys as read only parameter to sumulationRole
-
-        // TODO move to supported parameter to be set by the SUT
-
-        simulationRole.setConfigs(List.of(
+        // add parameter to the sequence
+        sequence.setSupportedParameters(List.of(
                 tokenEndpoint,
                 clientId,
                 clientSecret,
@@ -332,11 +333,16 @@ public class IUAClientSimulationService implements SimulationService {
                 personId,
                 principal,
                 principalId,
-                publicKey));
+                publicKey
+        ));
 
-        TestedRole testedRole = new TestedRole();
-        testedRole.setName("CH:IUA Server");
-        sequence.setTestedRoles(List.of(testedRole));
+        sequence.setTransactions(List.of("Get Access Token [ITI-71]"));
+        sequence.setShortDescription("Sequence for the ITI-71 client credential flow.");
+        sequence.setDescription(
+                "Sequence for the client credential flow of the ITI-71 transaction." +
+                        "In this sequence, the client sends a http POST request to the IUA Server to get an access token." +
+                        "The http request is signed using using http signature as defined in RFC-9421 the private key of the client simulator."
+        );
 
         sequence.setStandards(List.of(
                 "CH:IUA Get Access Token [ITI-71]",
@@ -347,15 +353,34 @@ public class IUAClientSimulationService implements SimulationService {
                 "and Standards referenced therein"
         ));
 
-        sequence.setTransactions(List.of("Get Access Token [ITI-71]"));
+        // add the tested role
+        TestedRole testedRole = new TestedRole();
+        testedRole.setName("CH:IUA Server");
+        sequence.setTestedRoles(List.of(testedRole));
 
-        sequence.setShortDescription("Sequence for the ITI-71 client credential flow.");
+        // add the simulationRole
+        SimulatedRole simulationRole = new SimulatedRole();
+        simulationRole.setName("CH:IUA Client");
+        simulationRole.setType(RoleType.INITIATOR);
+        sequence.setSimulatedRoles(List.of(simulationRole));
 
-        sequence.setDescription(
-                "Sequence for the client credential flow of the ITI-71 transaction." +
-                        "In this sequence, the client sends a http POST request to the IUA Server to get an access token." +
-                        "The http request is signed using using http signature as defined in RFC-9421 the private key of the client simulator."
-        );
+        // add the public keys as read-only parameter to simulationRole
+        try{
+
+            Parameter httpSignaturePublicKey = new Parameter();
+            httpSignaturePublicKey.setName("http_signature_public_key").setType(ParameterType.TEXT);
+            httpSignaturePublicKey.setValue(SigningKeyHelper.getEcPublicKeyJWK().toJSONString());
+
+            Parameter idPSignaturePublicKey = new Parameter();
+            idPSignaturePublicKey.setName("idp_signature_public_key").setType(ParameterType.TEXT);
+            idPSignaturePublicKey.setValue(SigningKeyHelper.getRSAPublicKeyJWK().toJSONString());
+
+            simulationRole.setConfigs(List.of(httpSignaturePublicKey, idPSignaturePublicKey));
+
+        } catch (ParseException e) {
+            LOG.error("Failed to create public keys.", e);
+            throw new RuntimeException(e);
+        }
 
         return sequence;
     }
@@ -369,69 +394,73 @@ public class IUAClientSimulationService implements SimulationService {
         SimulationSequence sequence = new SimulationSequence();
         sequence.setId(AUTHORIZATION_CODE_SEQUENCE_ID);
 
-        Parameter codeEndpoint = new Parameter();
+        SupportedParameter codeEndpoint = new SupportedParameter();
         codeEndpoint.setName("code_endpoint_url").setType(ParameterType.TEXT);
-        codeEndpoint.setValue("http://localhost:9000/authorize");
+        codeEndpoint.setDefaultValue("http://localhost:9000/authorize").setRequired(true);
+        codeEndpoint.setDescription("The URL of the code endpoint of the system under test.");
 
-        Parameter tokenEndpoint = new Parameter();
+        SupportedParameter tokenEndpoint = new SupportedParameter();
         tokenEndpoint.setName("token_endpoint_url").setType(ParameterType.TEXT);
-        tokenEndpoint.setValue("http://localhost:9000/token");
+        tokenEndpoint.setDefaultValue("http://localhost:9000/token").setRequired(true);
+        tokenEndpoint.setDescription("The URL of the token endpoint of the system under test.");
 
-        Parameter clientId = new Parameter();
+        SupportedParameter clientId = new SupportedParameter();
         clientId.setName("client_id").setType(ParameterType.TEXT);
-        clientId.setValue("${client-id}}");
+        clientId.setDefaultValue("client-id").setRequired(true);
+        clientId.setDescription("The client id of the IUA client simulator.");
 
-        Parameter clientSecret = new Parameter();
+        SupportedParameter clientSecret = new SupportedParameter();
         clientSecret.setName("client_secret").setType(ParameterType.TEXT);
-        clientSecret.setValue("${client-secret}}");
+        clientSecret.setDefaultValue("client-secret").setRequired(true);
+        clientSecret.setDescription("The client secret of the IUA client simulator.");
 
         // the scope to be overridden in th test setup.
         String requestScope = "purpose_of_use=urn:oid:2.16.756.5.30.1.127.3.10.5|NORMAL " +
                 "subject_role=urn:oid:2.16.756.5.30.1.127.3.10.6|HCP";
 
-        Parameter scope = new Parameter();
+        SupportedParameter scope = new SupportedParameter();
         scope.setName("scope").setType(ParameterType.TEXT);
-        scope.setValue(requestScope);
+        scope.setDefaultValue(requestScope).setRequired(true);
+        scope.setDescription("The scope to be requested defining the user role and purpose of use.");
 
         // the patient epr to be accessed, required for extended access token
-        Parameter personId = new Parameter();
+        SupportedParameter personId = new SupportedParameter();
         personId.setName("person_id").setType(ParameterType.TEXT);
-        personId.setValue("${patient.spid}");
+        personId.setDefaultValue("patient.spid").setRequired(false);
+        personId.setDescription("The SPID of the patient dossier to be accessed, required for extended access token.");
 
         // principal claim, only for role ASS
-        Parameter principal = new Parameter();
+        SupportedParameter principal = new SupportedParameter();
         principal.setName("principal").setType(ParameterType.TEXT);
-        principal.setValue("${principal.name}");
+        principal.setDefaultValue("principal.name").setRequired(false);
+        principal.setDescription("The name of the responsible person for the request. Required for assistants with role ASS.");
 
-        Parameter principalId = new Parameter();
+        SupportedParameter principalId = new SupportedParameter();
         principalId.setName("principal_id").setType(ParameterType.TEXT);
-        principalId.setValue("${principal.gln}");
+        principalId.setDefaultValue("principal.id").setRequired(false);
+        principal.setDescription("The GLN of the responsible person for the request. Required for assistants with role ASS.");
 
         // optional group claim, only for role HCP and ASS
-        Parameter group = new Parameter();
+        SupportedParameter group = new SupportedParameter();
         group.setName("group").setType(ParameterType.TEXT);
-        group.setValue("${group.name}");
+        group.setDefaultValue("group.name").setRequired(false);
+        group.setDescription("The name of the institution or group the request ist performed on behalf. Optional for role HCP and ASS.");
 
-        Parameter groupId = new Parameter();
-        groupId.setName("group_id").setType(ParameterType.TEXT);
-        groupId.setValue("${group.name}");
+        SupportedParameter groupId = new SupportedParameter();
+        groupId.setName("group").setType(ParameterType.TEXT);
+        groupId.setDefaultValue("group.id").setRequired(false);
+        groupId.setDescription("The OID of the institution or group the request ist performed on behalf. Optional for role HCP and ASS.");
 
         // example key to be overridden by the Authorization Server under test.
         String key = SigningKeyHelper.getExampleRSAPublicKey();
 
-        Parameter serverPublicKey = new Parameter();
+        SupportedParameter serverPublicKey = new SupportedParameter();
         serverPublicKey.setName("jwt_public_key").setType(ParameterType.TEXT);
-        serverPublicKey.setValue(key);
+        serverPublicKey.setDefaultValue(key).setRequired(true);
+        serverPublicKey.setDescription("The public key to verify the JWT signature of the system under test.");
 
-        SimulatedRole simulationRole = new SimulatedRole();
-        simulationRole.setName("CH:IUA Client");
-        simulationRole.setType(RoleType.INITIATOR);
-        sequence.setSimulatedRoles(List.of(simulationRole));
-
-        // TODO add the public keys as read only parameter to sumulationRole
-
-        // TODO move to supported parameter to be set by the SUT
-        simulationRole.setConfigs(List.of(
+        // add supported parameter to be set by the SUT
+        sequence.setSupportedParameters(List.of(
                 codeEndpoint,
                 tokenEndpoint,
                 clientId,
@@ -443,6 +472,13 @@ public class IUAClientSimulationService implements SimulationService {
                 group,
                 groupId,
                 serverPublicKey));
+
+        SimulatedRole simulationRole = new SimulatedRole();
+        simulationRole.setName("CH:IUA Client");
+        simulationRole.setType(RoleType.INITIATOR);
+        sequence.setSimulatedRoles(List.of(simulationRole));
+
+        // TODO add the public keys as read only parameter to sumulationRole
 
         TestedRole testedRole = new TestedRole();
         testedRole.setName("CH:IUA Server");
