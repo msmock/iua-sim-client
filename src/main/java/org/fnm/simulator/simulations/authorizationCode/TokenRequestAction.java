@@ -241,6 +241,23 @@ public class TokenRequestAction {
     }
 
     /**
+     * @param bodyElements map of key value pairs to be encoded in the request body
+     * @return the encoded body as a string
+     */
+    private String formEncode(Map<String, String> bodyElements) {
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<String, String> entry : bodyElements.entrySet()) {
+            if (!builder.isEmpty()) {
+                builder.append("&");
+            }
+            builder.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
+            builder.append("=");
+            builder.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
+        }
+        return builder.toString();
+    }
+
+    /**
      * Build the Authorization header for the client credential flow.
      *
      * @return encoded authorization header with content clientId:clientSecret
@@ -267,7 +284,7 @@ public class TokenRequestAction {
     }
 
     /**
-     * @return a transaction report indicating an undefined test result caused by an error the simulator code.
+     * @return a transaction report indicating an undefined test result caused by an error in the simulator.
      */
     private TransactionReport getUndefinedTransactionReport(String message) {
         TransactionReport report = new TransactionReport();
@@ -276,23 +293,6 @@ public class TokenRequestAction {
         report.setResponder(config.responder);
         report.setNote(message);
         return report;
-    }
-
-    /**
-     * @param bodyElements map of key value pairs to be encoded in the request body
-     * @return the encoded body as a string
-     */
-    private String formEncode(Map<String, String> bodyElements) {
-        StringBuilder builder = new StringBuilder();
-        for (Map.Entry<String, String> entry : bodyElements.entrySet()) {
-            if (!builder.isEmpty()) {
-                builder.append("&");
-            }
-            builder.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
-            builder.append("=");
-            builder.append(URLEncoder.encode(entry.getValue(), StandardCharsets.UTF_8));
-        }
-        return builder.toString();
     }
 
 }

@@ -18,7 +18,6 @@ import org.fnm.simulator.helper.GrantType;
 import org.fnm.simulator.helper.JWTTokenHelper;
 import org.fnm.simulator.helper.SigningKeyHelper;
 import org.jboss.logging.Logger;
-import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
 import java.net.URI;
@@ -60,7 +59,8 @@ public class TokenRequestAction {
     }
 
     /**
-     * @return action result indicating success or failure of the test
+     * Run the simulation.
+     * @return TransactionReport
      */
     public TransactionReport run() {
 
@@ -79,12 +79,6 @@ public class TokenRequestAction {
         if (config.personId != null && !config.personId.isBlank())
             bodyElements.put("person_id", config.personId);
 
-        //----
-
-        return getTransactionReport(bodyElements, authHeader);
-    }
-
-    private @NonNull TransactionReport getTransactionReport(Map<String, String> bodyElements, String authHeader) {
         String requestBody = formEncode(bodyElements);
 
         // add digest header for http signature
