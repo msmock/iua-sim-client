@@ -52,6 +52,8 @@ public class IUAClientSimulationService implements SimulationService {
     private final Map<String, ClientCredentialsSimulation> clientCredentialSimulations = new ConcurrentHashMap<>();
     private final Map<String, AuthorizationCodeSimulation> authorizationCodeSimulations = new ConcurrentHashMap<>();
 
+    private static final String SPID = "761337610411353650^^^&2.16.756.5.30.1.127.3.10.3&ISO";
+
     /**
      *
      * @param sessionId         unique session identifier, called callback in SimulationAPI.
@@ -313,7 +315,7 @@ public class IUAClientSimulationService implements SimulationService {
 
         SupportedParameter personId = new SupportedParameter();
         personId.setName("person_id").setType(ParameterType.TEXT);
-        personId.setDefaultValue("patient.spid").setRequired(false);
+        personId.setDefaultValue(SPID).setRequired(false);
         personId.setDescription("The SPID of the patient dossier to be accessed, required for extended access token.");
 
         // example key to be overridden by the Authorization Server under test.
@@ -426,7 +428,7 @@ public class IUAClientSimulationService implements SimulationService {
         // the patient epr to be accessed, required for extended access token
         SupportedParameter personId = new SupportedParameter();
         personId.setName("person_id").setType(ParameterType.TEXT);
-        personId.setDefaultValue("patient.spid").setRequired(false);
+        personId.setDefaultValue(SPID).setRequired(false);
         personId.setDescription("The SPID of the patient dossier to be accessed, required for extended access token.");
 
         // principal claim, only for role ASS
