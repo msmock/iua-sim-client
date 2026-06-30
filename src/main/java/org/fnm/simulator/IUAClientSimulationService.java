@@ -277,11 +277,6 @@ public class IUAClientSimulationService implements SimulationService {
         SimulationSequence sequence = new SimulationSequence();
         sequence.setId(CLIENT_CREDENTIAL_SEQUENCE_ID);
 
-        SimulatedRole simulationRole = new SimulatedRole();
-        simulationRole.setName("CH:IUA Client");
-        simulationRole.setType(RoleType.INITIATOR);
-        sequence.setSimulatedRoles(List.of(simulationRole));
-
         Parameter tokenEndpoint = new Parameter();
         tokenEndpoint.setName("token_endpoint_url").setType(ParameterType.TEXT);
         tokenEndpoint.setValue("http://localhost:9000/token");
@@ -319,6 +314,15 @@ public class IUAClientSimulationService implements SimulationService {
         Parameter publicKey = new Parameter();
         publicKey.setName("jwt_public_key").setType(ParameterType.TEXT);
         publicKey.setValue(key);
+
+        SimulatedRole simulationRole = new SimulatedRole();
+        simulationRole.setName("CH:IUA Client");
+        simulationRole.setType(RoleType.INITIATOR);
+        sequence.setSimulatedRoles(List.of(simulationRole));
+
+        // TODO add the public keys as read only parameter to sumulationRole
+
+        // TODO move to supported parameter to be set by the SUT
 
         simulationRole.setConfigs(List.of(
                 tokenEndpoint,
@@ -364,11 +368,6 @@ public class IUAClientSimulationService implements SimulationService {
 
         SimulationSequence sequence = new SimulationSequence();
         sequence.setId(AUTHORIZATION_CODE_SEQUENCE_ID);
-
-        SimulatedRole simulationRole = new SimulatedRole();
-        simulationRole.setName("CH:IUA Client");
-        simulationRole.setType(RoleType.INITIATOR);
-        sequence.setSimulatedRoles(List.of(simulationRole));
 
         Parameter codeEndpoint = new Parameter();
         codeEndpoint.setName("code_endpoint_url").setType(ParameterType.TEXT);
@@ -424,6 +423,14 @@ public class IUAClientSimulationService implements SimulationService {
         serverPublicKey.setName("jwt_public_key").setType(ParameterType.TEXT);
         serverPublicKey.setValue(key);
 
+        SimulatedRole simulationRole = new SimulatedRole();
+        simulationRole.setName("CH:IUA Client");
+        simulationRole.setType(RoleType.INITIATOR);
+        sequence.setSimulatedRoles(List.of(simulationRole));
+
+        // TODO add the public keys as read only parameter to sumulationRole
+
+        // TODO move to supported parameter to be set by the SUT
         simulationRole.setConfigs(List.of(
                 codeEndpoint,
                 tokenEndpoint,
