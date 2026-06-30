@@ -182,9 +182,6 @@ public class TokenRequestAction {
                     .build();
             DecodedJWT jwt = verifier.verify(responseBody);
 
-            String tokenPayload = new String(Base64.getUrlDecoder().decode(jwt.getPayload()));
-            LOG.info("Token payload is: " + tokenPayload);
-
             // create the transaction report
             TransactionReport report = new TransactionReport();
             report.setResult(Result.PASSED);
