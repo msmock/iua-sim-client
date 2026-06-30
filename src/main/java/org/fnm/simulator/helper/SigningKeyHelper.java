@@ -37,7 +37,7 @@ public class SigningKeyHelper {
             }""";
 
     // Example public key
-    private static final String exampleRSAPublicKey = """
+    private static final String rsaPublicKey = """
             { "kty": "RSA",
               "e": "AQAB",
               "use": "sig",
@@ -46,13 +46,6 @@ public class SigningKeyHelper {
               "0cWIFQS_1j03ioYCe5ZWbB6DINLsIBzw-Q3gftca6Fb6boim2BqKzpLQLDloN2KuZpbFJA70GlsJPhu5F72YFKbFPabrF11amSUUHR8UJlpwS9x57AFtEqKuxiTlb7rG2diDVqAMOdQ7n8gQEOBmhKOfnKKQyBcGIA7kfVocxSTRchmskNe_sHBXhxXH-k2vYTRLGJxSvaaGD6HX2XRtPGKnAVL7LoO8xqXUR_by9LbDBfPL4aKzcBDdzwV47hHjQvgk-rDvqownnGBPq-nRiIQjt58dAfNhTnLQUeXOEmDiUP06s4XlW5niynTYSJHDdeT29QhX3Bsdqqq3XinMpQ"
             }
             """;
-
-    /**
-     * @return the EC key pair.
-     */
-    public static String getEcKeyPair() {
-        return ecKeyPair;
-    }
 
     /**
      * @return the EC key pair as JWK.
@@ -96,8 +89,8 @@ public class SigningKeyHelper {
     /**
      * RSA public key displayed as example in the sequence description.
      */
-    public static String getExampleRSAPublicKey() {
-        return exampleRSAPublicKey;
+    public static String getRSAPublicKey() {
+        return rsaPublicKey;
     }
 
 }

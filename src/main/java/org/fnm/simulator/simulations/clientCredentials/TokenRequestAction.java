@@ -18,6 +18,7 @@ import org.fnm.simulator.helper.GrantType;
 import org.fnm.simulator.helper.JWTTokenHelper;
 import org.fnm.simulator.helper.SigningKeyHelper;
 import org.jboss.logging.Logger;
+import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
 import java.net.URI;
@@ -78,6 +79,12 @@ public class TokenRequestAction {
         if (config.personId != null && !config.personId.isBlank())
             bodyElements.put("person_id", config.personId);
 
+        //----
+
+        return getTransactionReport(bodyElements, authHeader);
+    }
+
+    private @NonNull TransactionReport getTransactionReport(Map<String, String> bodyElements, String authHeader) {
         String requestBody = formEncode(bodyElements);
 
         // add digest header for http signature
@@ -152,13 +159,8 @@ public class TokenRequestAction {
         }
 
         String responseBody = response.body();
-        LOG.debug("Received responseBody from server :" + responseBody);
-
         String algName = jwtTokenHelper.getAlgName(responseBody);
         LOG.info("Algorithm name in responseBody is : " + algName);
-
-        String responsePayload = jwtTokenHelper.getPayload(responseBody);
-        LOG.info("Payload in responseBody is : " + responsePayload);
 
         try {
 
@@ -180,7 +182,10 @@ public class TokenRequestAction {
                     .acceptLeeway(1)
                     .acceptExpiresAt(5)
                     .build();
+
             DecodedJWT jwt = verifier.verify(responseBody);
+
+            LOG.info("JWT payload is " + new String(Base64.getUrlDecoder().decode(jwt.getPayload())));
 
             // create the transaction report
             TransactionReport report = new TransactionReport();
@@ -257,6 +262,9 @@ public class TokenRequestAction {
         report.setResult(Result.FAILED);
         report.setInitiator(config.initiator);
         report.setResponder(config.responder);
+        report.setStandards(List.of("CH:ITI-71", "HTTP/1.1"));
+        report.setTransaction("CH:IUA Authorization Code Flow [ITI-71]");
+        report.setStandards(List.of("CH:IUA"));
         report.setNote(message);
         return report;
     }

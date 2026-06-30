@@ -317,7 +317,7 @@ public class IUAClientSimulationService implements SimulationService {
         personId.setDescription("The SPID of the patient dossier to be accessed, required for extended access token.");
 
         // example key to be overridden by the Authorization Server under test.
-        String key = SigningKeyHelper.getExampleRSAPublicKey();
+        String key = SigningKeyHelper.getRSAPublicKey();
 
         SupportedParameter publicKey = new SupportedParameter();
         publicKey.setName("jwt_public_key").setType(ParameterType.TEXT);
@@ -452,7 +452,7 @@ public class IUAClientSimulationService implements SimulationService {
         groupId.setDescription("The OID of the institution or group the request ist performed on behalf. Optional for role HCP and ASS.");
 
         // example key to be overridden by the Authorization Server under test.
-        String key = SigningKeyHelper.getExampleRSAPublicKey();
+        String key = SigningKeyHelper.getRSAPublicKey();
 
         SupportedParameter serverPublicKey = new SupportedParameter();
         serverPublicKey.setName("jwt_public_key").setType(ParameterType.TEXT);

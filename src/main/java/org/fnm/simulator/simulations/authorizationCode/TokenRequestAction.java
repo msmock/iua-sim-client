@@ -133,7 +133,6 @@ public class TokenRequestAction {
             return getUndefinedTransactionReport(message);
         }
 
-        // build the request
         HttpRequest httpRequest = HttpRequest.newBuilder(URI.create(config.tokenEndpointUrl))
                 .header("Accept", "application/json")
                 .header("Accept-Encoding", "gzip, deflate")
@@ -148,7 +147,6 @@ public class TokenRequestAction {
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                 .build();
 
-        // perform the request
         HttpResponse<String> response;
 
         try {
@@ -175,13 +173,8 @@ public class TokenRequestAction {
         }
 
         String responseBody = response.body();
-        LOG.debug("Received responseBody from server :" + responseBody);
-
         String algName = jwtTokenHelper.getAlgName(responseBody);
         LOG.info("Algorithm name in responseBody is : " + algName);
-
-        String responsePayload = jwtTokenHelper.getPayload(responseBody);
-        LOG.info("Payload in responseBody is : " + responsePayload);
 
         try {
 
@@ -203,7 +196,10 @@ public class TokenRequestAction {
                     .acceptLeeway(1)
                     .acceptExpiresAt(5)
                     .build();
+
             DecodedJWT jwt = verifier.verify(responseBody);
+
+            LOG.info("JWT payload is " + new String(Base64.getUrlDecoder().decode(jwt.getPayload())));
 
             // create the transaction report
             TransactionReport report = new TransactionReport();
