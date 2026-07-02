@@ -44,7 +44,7 @@ public class IDTokenHelper {
         payload.addProperty("exp", Instant.now().getEpochSecond() + 600);
         payload.addProperty("iat", Instant.now().getEpochSecond());
         payload.addProperty("nonce", "n-0S6_WzA2Mj");
-        payload.addProperty("name", "Jane Doe");
+        payload.addProperty("name", "Martina Mustermann");
         return payload;
     }
 

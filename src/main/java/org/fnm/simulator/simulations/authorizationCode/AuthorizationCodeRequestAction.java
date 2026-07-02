@@ -42,12 +42,29 @@ public class AuthorizationCodeRequestAction {
         // put client_id and client_secret in the Authentication header
         String authHeader = buildAuthHeader(config.clientId, config.clientSecret);
 
-        // URL encode the scope value.
-        String queryParameter = "response_type=code&state=123456789&redirect_uri=" + REDIRECT_URI + "&scope=" +
-                URLEncoder.encode(config.scope, StandardCharsets.UTF_8);
+        StringBuilder queryString = new StringBuilder();
+        queryString.append("response_type=code");
+        queryString.append("&client_id=").append(encode(config.clientId));
+        queryString.append("&state=123456789");
+        queryString.append("&redirect_uri=").append(encode(REDIRECT_URI));
+        queryString.append("&scope=").append(encode(config.scope));
 
-        // URI uri = URI.create(config.codeEndpointUrl+"?"+URLEncoder.encode(queryParameter, StandardCharsets.UTF_8));
-        URI uri = URI.create(config.codeEndpointUrl + "?" + queryParameter);
+        if (config.personId != null && !config.personId.isBlank())
+            queryString.append("&person_id=").append(encode(config.personId));
+        if (config.principal != null && !config.principal.isBlank())
+            queryString.append("&principal=").append(encode(config.principal));
+        if (config.principalId != null && !config.principalId.isBlank())
+            queryString.append("&principal_id=").append(encode(config.principalId));
+        if (config.group != null && !config.group.isBlank())
+            queryString.append("&group=").append(encode(config.group));
+        if (config.groupId != null && !config.groupId.isBlank())
+            queryString.append("&group_id=").append(encode(config.groupId));
+        if (config.resource != null && !config.resource.isBlank())
+            queryString.append("&resource=").append(encode(config.resource));
+        if (config.requestedTokenType != null && !config.requestedTokenType.isBlank())
+            queryString.append("&requested_token_type=").append(config.requestedTokenType);
+
+        URI uri = URI.create(config.codeEndpointUrl + "?" + queryString.toString());
 
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(uri)
@@ -142,6 +159,10 @@ public class AuthorizationCodeRequestAction {
         report.setNote("Received authorization code:" + authorizationCode + "and state:" + state);
 
         return report;
+    }
+
+    private String encode(String s) {
+        return URLEncoder.encode(s, StandardCharsets.UTF_8);
     }
 
     /**

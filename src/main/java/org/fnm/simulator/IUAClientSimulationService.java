@@ -480,7 +480,7 @@ public class IUAClientSimulationService implements SimulationService {
         simulationRole.setType(RoleType.INITIATOR);
         sequence.setSimulatedRoles(List.of(simulationRole));
 
-        // TODO add the public keys as read only parameter to sumulationRole
+        // add the public keys as read only parameter to sumulationRole
 
         TestedRole testedRole = new TestedRole();
         testedRole.setName("CH:IUA Server");

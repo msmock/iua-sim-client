@@ -33,17 +33,24 @@ public class AuthorizationCodeConfig {
     public String tokenEndpointUrl;
     public String clientId;
     public String clientSecret;
+    public String state;
+    // public String redirectUri;
     public String scope;
     public String personId;
     public String principal;
     public String principalId;
     public String group;
     public String groupId;
+    public String resource;
+    // public String codeChallenge;
+    // public String codeChallengeMethod;
+    public String requestedTokenType;
+
     public String jwtPublicKey;
 
     // result from the authorization code request
     public String authorizationCode;
-    public String state;
+
 
     /**
      *
@@ -81,6 +88,10 @@ public class AuthorizationCodeConfig {
                     case "person_id" -> personId = parameter.getValue();
                     case "principal" -> principal = parameter.getValue();
                     case "principal_id" -> principalId = parameter.getValue();
+                    case "group" -> group = parameter.getValue();
+                    case "group_id" -> groupId = parameter.getValue();
+                    case "resource" -> resource = parameter.getValue();
+                    case "requested_token_type" -> requestedTokenType = parameter.getValue();
                     case "jwt_public_key" -> jwtPublicKey = parameter.getValue();
                 }
             }
@@ -88,7 +99,7 @@ public class AuthorizationCodeConfig {
     }
 
     /**
-     * TODO pimp for ROLE specific requirements
+     * TODO extend for ROLE specific requirements
      *
      * Validate the configuration.
      */
@@ -112,8 +123,6 @@ public class AuthorizationCodeConfig {
 
         if (jwtPublicKey == null || jwtPublicKey.isBlank())
             builder.append("JWT public key is not set.");
-
-
 
         String message = builder.toString();
         if (!message.isEmpty()) {
