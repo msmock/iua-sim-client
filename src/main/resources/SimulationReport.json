@@ -1,6 +1,6 @@
 {
   "uuid": "76431628-c91a-4dc1-8c50-93c0cdf301fe",
-  "dateTime": "2026-06-30T11:13:14.180851Z",
+  "dateTime": "2026-07-03T07:24:22.897871Z",
   "result": "PASSED",
   "serviceName": "IUAClientSimulationService",
   "serviceVersion": "0.5.0",
@@ -26,8 +26,8 @@
       "messages": [
         {
           "name": "Get Access Token Response",
-          "dateTime": "2026-06-30T11:13:14.180788Z",
-          "content": "ZXlKaGJHY2lPaUpTVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKSlZVRlVaWE4wVTJWeWRtVnlJaXdpYzNWaUlqb2lKSHRqYkdsbGJuUXRhV1I5SWl3aVlYVmtJam9pYUhSMGNEb3ZMMlZvY2k1amFDSXNJbWxoZENJNk1UYzRNamd4TnprNU5Dd2libUptSWpveE56Z3lPREUzT1RrMExDSmxlSEFpT2pFM09ESTRNVGd5T1RRc0ltcDBhU0k2SW1Rd05XRXdaR00yTFRRMFpEVXRORGhpWmkwNE0ySmhMVE0xTnpBMlpEazFZVEkzWmlJc0luTmpiM0JsSWpvaWNIVnljRzl6WlY5dlpsOTFjMlU5ZFhKdU9tOXBaRG95TGpFMkxqYzFOaTQxTGpNd0xqRXVNVEkzTGpNdU1UQXVOWHhPVDFKTlFVd2djM1ZpYW1WamRGOXliMnhsUFhWeWJqcHZhV1E2TWk0eE5pNDNOVFl1TlM0ek1DNHhMakV5Tnk0ekxqRXdMalo4U0VOUUlpd2laWGgwWlc1emFXOXVjeUk2ZXlKamFGOXBkV0VpT25zaWMzVmlhbVZqZEY5dVlXMWxJanB1ZFd4c0xDSm9iMjFsWDJOdmJXMTFibWwwZVY5cFpDSTZJaVI3Y0hKcGJtTnBjR0ZzTFdOdmJXMTFibWwwZVMxcFpIMGlmU3dpWTJoZlpYQnlJanA3SW5WelpYSmZhV1FpT201MWJHd3NJblZ6WlhKZmFXUmZjWFZoYkdsbWFXVnlJam9pZFhKdU9tZHpNVHBuYkc0aWZTd2lZMmhmWjNKdmRYQnpJanBiZXlKdVlXMWxJam9pVG1GdFpTQnZaaUJuY205MWNDQjNhWFJvSUdsa0lIVnlianB2YVdRNk1pNHlMakl1TVNJc0ltbGtJam9pZFhKdU9tOXBaRG95TGpJdU1pNHhJbjBzZXlKdVlXMWxJam9pVG1GdFpTQnZaaUJuY205MWNDQjNhWFJvSUdsa0lIVnlianB2YVdRNk1pNHlMakl1TWlJc0ltbGtJam9pZFhKdU9tOXBaRG95TGpJdU1pNHlJbjFkZlgwLnR6bWt6bHlFVXV5YmN4akd4dy03M05vOFkzeXNQal9lc2F0TFUwakFXRDVEM3p6MnR0Um1MMGh0eUhMeDhaaGU0akdHcXFuVTZNbmFUbDNrOXZ1ZjE3RjZPLVhueTREaGhvSk5mdHFEdFQxNHp2aURpN01QcV9ONG5qWlpUOFBzNGxuMkthcjMtWDk2Y0JGeVJaTXIxSjVXUUtnQk9idnU4NlNNaUd2b0ZPZ2VGb2Vhb0dvQ2hEa2dPQ094LUFibDhaRHpyeUtYMDRUMThGZ2Z2Szg3aGVEaXVta1dwQjA2eEhLbVVQXy1VYUd5Vm94enI4QTFEOE44Y09oLVp0UmllemptR3hQaHNMZkFDUU1jSDFJYlpncDdCalR4X0ozSFplUk5sQUtNc0ppbXIyUDAyZlFwX2RWYmsxWVdwSExwM2VpTXhUZU9NNlIzM1d3M1h3OGVCZw==",
+          "dateTime": "2026-07-03T07:24:22.897858Z",
+          "content": "ZXlKaGJHY2lPaUpTVXpJMU5pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SnBjM01pT2lKSlZVRlVaWE4wVTJWeWRtVnlJaXdpYzNWaUlqb2lKSHRqYkdsbGJuUXRhV1I5SWl3aVlYVmtJam9pYUhSMGNEb3ZMMlZvY2k1amFDSXNJbWxoZENJNk1UYzRNekEyTXpRMk1pd2libUptSWpveE56Z3pNRFl6TkRZeUxDSmxlSEFpT2pFM09ETXdOak0zTmpJc0ltcDBhU0k2SW1NNVkyWXlNek14TFdSak1HUXRORFF6TVMwNVpqRTBMV0V3WWpjeE1qYzROR1l4TkNJc0luTmpiM0JsSWpvaWNIVnljRzl6WlY5dlpsOTFjMlU5ZFhKdU9tOXBaRG95TGpFMkxqYzFOaTQxTGpNd0xqRXVNVEkzTGpNdU1UQXVOWHhPVDFKTlFVd2djM1ZpYW1WamRGOXliMnhsUFhWeWJqcHZhV1E2TWk0eE5pNDNOVFl1TlM0ek1DNHhMakV5Tnk0ekxqRXdMalo4U0VOUUlpd2ljR1Z5YzI5dVgybGtJam9pTnpZeE16TTNOakV3TkRFeE16VXpOalV3WGw1ZUpqSXVNVFl1TnpVMkxqVXVNekF1TVM0eE1qY3VNeTR4TUM0ekprbFRUeUlzSW1WNGRHVnVjMmx2Ym5NaU9uc2lZMmhmYVhWaElqcDdJbk4xWW1wbFkzUmZibUZ0WlNJNklrUnlMaUJYWVd4MFpYSWlMQ0p6ZFdKcVpXTjBYM0p2YkdVaU9pSjFjbTQ2YjJsa09qSXVNVFl1TnpVMkxqVXVNekF1TVM0eE1qY3VNeTR4TUM0MmZFaERVQ0lzSW5CMWNuQnZjMlZmYjJaZmRYTmxJam9pZFhKdU9tOXBaRG95TGpFMkxqYzFOaTQxTGpNd0xqRXVNVEkzTGpNdU1UQXVOWHhPVDFKTklpd2lhRzl0WlY5amIyMXRkVzVwZEhsZmFXUWlPaUoxY200NmIybGtPakV1TWk0ekxqUWlMQ0p3WlhKemIyNWZhV1FpT2lJM05qRXpNemMyTVRBME1URXpOVE0yTlRCZVhsNG1NaTR4Tmk0M05UWXVOUzR6TUM0eExqRXlOeTR6TGpFd0xqTW1TVk5QSW4wc0ltTm9YMlZ3Y2lJNmV5SjFjMlZ5WDJsa0lqb2lOell3TVRBd01EazVOamd5TkNJc0luVnpaWEpmYVdSZmNYVmhiR2xtYVdWeUlqb2lkWEp1T21kek1UcG5iRzRpZlN3aVkyaGZaM0p2ZFhCeklqcGJleUp1WVcxbElqb2lUbUZ0WlNCdlppQm5jbTkxY0NCM2FYUm9JR2xrSUhWeWJqcHZhV1E2TWk0eUxqSXVNU0lzSW1sa0lqb2lkWEp1T205cFpEb3lMakl1TWk0eEluMHNleUp1WVcxbElqb2lUbUZ0WlNCdlppQm5jbTkxY0NCM2FYUm9JR2xrSUhWeWJqcHZhV1E2TWk0eUxqSXVNaUlzSW1sa0lqb2lkWEp1T205cFpEb3lMakl1TWk0eUluMWRmWDAuSUFBbE01ZWhvYjc4MlgzRFpMMk9qYXZZUFZmOFlFVzE5VmtMWHJaaDRZUVJmak0yLUV0RktrdTdHMmlSR0JfaVQ5azJyZEZOTHlvakZQRTZVaF9WVEw3eE8yM1Vwd3JoZGotTFVfV0JwXzBCWU5vQzc5LWZLVjBaWFF0WnRTakkxSVlZcXVvYU9hMjZySFVqdWlCWEJLVjhhN2dKUk43cFFQOG8yZHpiRWFpcm5yQ3g4YUl0MnZwcDEyM3JKaDg1TUhIcXd6Z0ZfVE5OSWN6RGk3NFVVZDA4V3llbm9JWnQzT1gxcERRZDJnb1RLYUtrU1Zfa0NMWVBWVXcxOTl5WjdUQTVTT1dMX29seTlQd2RDOE8xZllldG55U21xU09QQkFiMzkzRkNVbWV0SEkwU0FOQUNnanFRWk5wVXhBVUdCSEhXejN3VzE1RUVwZy05bG04dmhR",
           "reference": null,
           "sender": "IUA Client",
           "receiver": "CH:IUA Server",
@@ -48,97 +48,97 @@
       "value": "http://localhost:9000/authorize",
       "type": "TEXT",
       "nameDefined": true,
-      "valueDefined": true,
-      "typeDefined": true
+      "typeDefined": true,
+      "valueDefined": true
     },
     {
       "name": "token_endpoint_url",
       "value": "http://localhost:9000/token",
       "type": "TEXT",
       "nameDefined": true,
-      "valueDefined": true,
-      "typeDefined": true
+      "typeDefined": true,
+      "valueDefined": true
     },
     {
       "name": "client_id",
       "value": "${client-id}",
       "type": "TEXT",
       "nameDefined": true,
-      "valueDefined": true,
-      "typeDefined": true
+      "typeDefined": true,
+      "valueDefined": true
     },
     {
       "name": "client_secret",
       "value": "${client-secret}",
       "type": "TEXT",
       "nameDefined": true,
-      "valueDefined": true,
-      "typeDefined": true
+      "typeDefined": true,
+      "valueDefined": true
     },
     {
       "name": "scope",
       "value": "purpose_of_use=urn:oid:2.16.756.5.30.1.127.3.10.5|NORMAL subject_role=urn:oid:2.16.756.5.30.1.127.3.10.6|HCP",
       "type": "TEXT",
       "nameDefined": true,
-      "valueDefined": true,
-      "typeDefined": true
+      "typeDefined": true,
+      "valueDefined": true
     },
     {
       "name": "person_id",
-      "value": "${person}",
+      "value": "761337610411353650^^^&2.16.756.5.30.1.127.3.10.3&ISO",
       "type": "TEXT",
       "nameDefined": true,
-      "valueDefined": true,
-      "typeDefined": true
+      "typeDefined": true,
+      "valueDefined": true
     },
     {
       "name": "principal",
       "value": "${principal}",
       "type": "TEXT",
       "nameDefined": true,
-      "valueDefined": true,
-      "typeDefined": true
+      "typeDefined": true,
+      "valueDefined": true
     },
     {
       "name": "principal_id",
       "value": "${principal-id}",
       "type": "TEXT",
       "nameDefined": true,
-      "valueDefined": true,
-      "typeDefined": true
+      "typeDefined": true,
+      "valueDefined": true
     },
     {
       "name": "group",
       "value": "${group.name}",
       "type": "TEXT",
       "nameDefined": true,
-      "valueDefined": true,
-      "typeDefined": true
+      "typeDefined": true,
+      "valueDefined": true
     },
     {
       "name": "group_id",
       "value": "${group.name}",
       "type": "TEXT",
       "nameDefined": true,
-      "valueDefined": true,
-      "typeDefined": true
+      "typeDefined": true,
+      "valueDefined": true
     },
     {
       "name": "jwt_public_key",
       "value": "{\"kty\": \"RSA\",\"e\": \"AQAB\",\"use\": \"sig\",\"kid\": \"http-signing-keys\",\"alg\": \"RS256\",\"n\": \"0cWIFQS_1j03ioYCe5ZWbB6DINLsIBzw-Q3gftca6Fb6boim2BqKzpLQLDloN2KuZpbFJA70GlsJPhu5F72YFKbFPabrF11amSUUHR8UJlpwS9x57AFtEqKuxiTlb7rG2diDVqAMOdQ7n8gQEOBmhKOfnKKQyBcGIA7kfVocxSTRchmskNe_sHBXhxXH-k2vYTRLGJxSvaaGD6HX2XRtPGKnAVL7LoO8xqXUR_by9LbDBfPL4aKzcBDdzwV47hHjQvgk-rDvqownnGBPq-nRiIQjt58dAfNhTnLQUeXOEmDiUP06s4XlW5niynTYSJHDdeT29QhX3Bsdqqq3XinMpQ\"}",
       "type": "TEXT",
       "nameDefined": true,
-      "valueDefined": true,
-      "typeDefined": true
+      "typeDefined": true,
+      "valueDefined": true
     }
   ],
   "unexpectedErrors": [],
-  "uuidDefined": true,
-  "serviceNameDefined": true,
-  "serviceVersionDefined": true,
-  "sequenceIdDefined": true,
   "transactionResult": {
     "empty": false,
     "present": true
-  }
+  },
+  "serviceNameDefined": true,
+  "serviceVersionDefined": true,
+  "sequenceIdDefined": true,
+  "uuidDefined": true
 }

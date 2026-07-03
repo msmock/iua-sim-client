@@ -1,96 +1,356 @@
-
-{
-  "sequenceId": "0064e130-cf31-40f5-ad62-163af639b360",
-  "sequenceIdDefined": true,
-  "simulationParameters": [
-    {
-      "name": "code_endpoint_url",
-      "nameDefined": true,
-      "type": "TEXT",
-      "typeDefined": true,
-      "value": "http://localhost:9000/authorize",
-      "valueDefined": true
-    },
-    {
-      "name": "token_endpoint_url",
-      "nameDefined": true,
-      "type": "TEXT",
-      "typeDefined": true,
-      "value": "http://localhost:9000/token",
-      "valueDefined": true
-    },
-    {
-      "name": "client_id",
-      "nameDefined": true,
-      "type": "TEXT",
-      "typeDefined": true,
-      "value": "${client-id}",
-      "valueDefined": true
-    },
-    {
-      "name": "client_secret",
-      "nameDefined": true,
-      "type": "TEXT",
-      "typeDefined": true,
-      "value": "${client-secret}",
-      "valueDefined": true
-    },
-    {
-      "name": "scope",
-      "nameDefined": true,
-      "type": "TEXT",
-      "typeDefined": true,
-      "value": "purpose_of_use=urn:oid:2.16.756.5.30.1.127.3.10.5|NORMAL subject_role=urn:oid:2.16.756.5.30.1.127.3.10.6|HCP",
-      "valueDefined": true
-    },
-    {
-      "name": "person_id",
-      "nameDefined": true,
-      "type": "TEXT",
-      "typeDefined": true,
-      "value": "${person}",
-      "valueDefined": true
-    },
-    {
-      "name": "principal",
-      "nameDefined": true,
-      "type": "TEXT",
-      "typeDefined": true,
-      "value": "${principal}",
-      "valueDefined": true
-    },
-    {
-      "name": "principal_id",
-      "nameDefined": true,
-      "type": "TEXT",
-      "typeDefined": true,
-      "value": "${principal-id}",
-      "valueDefined": true
-    },
-    {
-      "name": "group",
-      "nameDefined": true,
-      "type": "TEXT",
-      "typeDefined": true,
-      "value": "${group.name}",
-      "valueDefined": true
-    },
-    {
-      "name": "group_id",
-      "nameDefined": true,
-      "type": "TEXT",
-      "typeDefined": true,
-      "value": "${group.name}",
-      "valueDefined": true
-    },
-    {
-      "name": "jwt_public_key",
-      "nameDefined": true,
-      "type": "TEXT",
-      "typeDefined": true,
-      "value": "{\"kty\": \"RSA\",\"e\": \"AQAB\",\"use\": \"sig\",\"kid\": \"http-signing-keys\",\"alg\": \"RS256\",\"n\": \"0cWIFQS_1j03ioYCe5ZWbB6DINLsIBzw-Q3gftca6Fb6boim2BqKzpLQLDloN2KuZpbFJA70GlsJPhu5F72YFKbFPabrF11amSUUHR8UJlpwS9x57AFtEqKuxiTlb7rG2diDVqAMOdQ7n8gQEOBmhKOfnKKQyBcGIA7kfVocxSTRchmskNe_sHBXhxXH-k2vYTRLGJxSvaaGD6HX2XRtPGKnAVL7LoO8xqXUR_by9LbDBfPL4aKzcBDdzwV47hHjQvgk-rDvqownnGBPq-nRiIQjt58dAfNhTnLQUeXOEmDiUP06s4XlW5niynTYSJHDdeT29QhX3Bsdqqq3XinMpQ\"}",
-      "valueDefined": true
-    }
-  ],
-  "timeoutSeconds": 10
-}
+[
+  {
+    "atLeastOneSimulatedRole": true,
+    "atLeastOneTestedRole": true,
+    "description": "Sequence for the client credential flow of the ITI-71 transaction.In this sequence, the client sends a http POST request to the IUA Server to get an access token.The http request is signed using using http signature as defined in RFC-9421 the private key of the client simulator.",
+    "id": "c74f063b-fb76-405e-8fa3-b2632b5c112f",
+    "idDefined": true,
+    "runnable": true,
+    "shortDescription": "Sequence for the ITI-71 client credential flow.",
+    "simulatedRoles": [
+      {
+        "configs": [
+          {
+            "name": "http_signature_public_key",
+            "nameDefined": true,
+            "type": "TEXT",
+            "typeDefined": true,
+            "value": "{\"kty\":\"EC\",\"use\":\"sig\",\"crv\":\"P-256\",\"kid\":\"ec-signing-key\",\"x\":\"cB7hNaUvCNpjKbhEDPiZONcT2WP7Na0M2Vghdt_f0SU\",\"y\":\"BqY4QI6UCXqpFy5PHpcljA61QeFexLF180eYxheTnlU\",\"alg\":\"ES256\"}",
+            "valueDefined": true
+          },
+          {
+            "name": "idp_signature_public_key",
+            "nameDefined": true,
+            "type": "TEXT",
+            "typeDefined": true,
+            "value": "{\"kty\":\"RSA\",\"e\":\"AQAB\",\"use\":\"sig\",\"kid\":\"rsa-signing-key\",\"alg\":\"RS256\",\"n\":\"0cWIFQS_1j03ioYCe5ZWbB6DINLsIBzw-Q3gftca6Fb6boim2BqKzpLQLDloN2KuZpbFJA70GlsJPhu5F72YFKbFPabrF11amSUUHR8UJlpwS9x57AFtEqKuxiTlb7rG2diDVqAMOdQ7n8gQEOBmhKOfnKKQyBcGIA7kfVocxSTRchmskNe_sHBXhxXH-k2vYTRLGJxSvaaGD6HX2XRtPGKnAVL7LoO8xqXUR_by9LbDBfPL4aKzcBDdzwV47hHjQvgk-rDvqownnGBPq-nRiIQjt58dAfNhTnLQUeXOEmDiUP06s4XlW5niynTYSJHDdeT29QhX3Bsdqqq3XinMpQ\"}",
+            "valueDefined": true
+          }
+        ],
+        "name": "CH:IUA Client",
+        "nameDefined": true,
+        "type": "INITIATOR",
+        "typeDefined": true
+      }
+    ],
+    "standards": [
+      "CH:IUA Get Access Token [ITI-71]",
+      "RFC-9421 HTTP Message Signatures",
+      "OAuth 2.1 draft-ietf-oauth-v2-1-15",
+      "RFC 7519 JSON Web Token (JWT)",
+      "RFC 7515 JSON Web Signature (JWS)",
+      "and Standards referenced therein"
+    ],
+    "supportedParameters": [
+      {
+        "defaultInOptions": true,
+        "defaultValue": "http://localhost:9000/token",
+        "description": "The URL of the token endpoint of the system under test.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "token_endpoint_url",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": true,
+        "type": "TEXT",
+        "typeDefined": true
+      },
+      {
+        "defaultInOptions": true,
+        "defaultValue": "client-secret",
+        "description": "The client secret of the IUA client simulator.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "client_secret",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": true,
+        "type": "TEXT",
+        "typeDefined": true
+      },
+      {
+        "defaultInOptions": true,
+        "descriptionDefined": false,
+        "groupNameDefined": false,
+        "nameDefined": false,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": false,
+        "typeDefined": false
+      },
+      {
+        "defaultInOptions": true,
+        "defaultValue": "purpose_of_use=urn:oid:2.16.756.5.30.1.127.3.10.5|AUTO subject_role=urn:oid:2.16.756.5.30.1.127.3.10.6|TC",
+        "description": "The scope to be requested defining the user role and purpose of use.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "scope",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": true,
+        "type": "TEXT",
+        "typeDefined": true
+      },
+      {
+        "defaultInOptions": true,
+        "defaultValue": "761337610411353650^^^&2.16.756.5.30.1.127.3.10.3&ISO",
+        "description": "The SPID of the patient dossier to be accessed, required for extended access token.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "person_id",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": false,
+        "type": "TEXT",
+        "typeDefined": true
+      },
+      {
+        "defaultInOptions": true,
+        "defaultValue": "principal.name",
+        "description": "The name of the responsible person for the request.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "principal",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": true,
+        "type": "TEXT",
+        "typeDefined": true
+      },
+      {
+        "defaultInOptions": true,
+        "defaultValue": "principal.id",
+        "description": "The GLN of the responsible person for the request.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "principal_id",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": true,
+        "type": "TEXT",
+        "typeDefined": true
+      },
+      {
+        "defaultInOptions": true,
+        "defaultValue": "{ \"kty\": \"RSA\",\n  \"e\": \"AQAB\",\n  \"use\": \"sig\",\n  \"kid\": \"public key example for jwt verification\",\n  \"alg\": \"RS256\",\"n\":\n  \"0cWIFQS_1j03ioYCe5ZWbB6DINLsIBzw-Q3gftca6Fb6boim2BqKzpLQLDloN2KuZpbFJA70GlsJPhu5F72YFKbFPabrF11amSUUHR8UJlpwS9x57AFtEqKuxiTlb7rG2diDVqAMOdQ7n8gQEOBmhKOfnKKQyBcGIA7kfVocxSTRchmskNe_sHBXhxXH-k2vYTRLGJxSvaaGD6HX2XRtPGKnAVL7LoO8xqXUR_by9LbDBfPL4aKzcBDdzwV47hHjQvgk-rDvqownnGBPq-nRiIQjt58dAfNhTnLQUeXOEmDiUP06s4XlW5niynTYSJHDdeT29QhX3Bsdqqq3XinMpQ\"\n}\n",
+        "description": "The public key to verify the JWT signature of the system under test.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "jwt_public_key",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": true,
+        "type": "TEXT",
+        "typeDefined": true
+      }
+    ],
+    "testedRoles": [
+      {
+        "name": "CH:IUA Server",
+        "nameDefined": true,
+        "typeDefined": false
+      }
+    ],
+    "transactions": [
+      "Get Access Token [ITI-71]"
+    ]
+  },
+  {
+    "atLeastOneSimulatedRole": true,
+    "atLeastOneTestedRole": true,
+    "description": "Sequence for the authorization code flow of the ITI-71 transaction.In this sequence, the client first sends a http Get request to the IUA Server to get an authorization code.In the second step the client sends a http POST request to the IUA Server to exchange the authorization code to an access token.The second http request is signed using http signature as defined in RFC-9421 with the private key of the simulator.",
+    "id": "0064e130-cf31-40f5-ad62-163af639b360",
+    "idDefined": true,
+    "runnable": true,
+    "shortDescription": "Sequence for the ITI-71 authorization code flow.",
+    "simulatedRoles": [
+      {
+        "configs": [],
+        "name": "CH:IUA Client",
+        "nameDefined": true,
+        "type": "INITIATOR",
+        "typeDefined": true
+      }
+    ],
+    "standards": [
+      "CH:IUA Get Access Token [ITI-71]",
+      "RFC-9421 HTTP Message Signatures",
+      "OAuth 2.1 draft-ietf-oauth-v2-1-15",
+      "RFC 7519 JSON Web Token (JWT)",
+      "RFC 7515 JSON Web Signature (JWS)",
+      "and Standards referenced therein"
+    ],
+    "supportedParameters": [
+      {
+        "defaultInOptions": true,
+        "defaultValue": "http://localhost:9000/authorize",
+        "description": "The URL of the code endpoint of the system under test.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "code_endpoint_url",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": true,
+        "type": "TEXT",
+        "typeDefined": true
+      },
+      {
+        "defaultInOptions": true,
+        "defaultValue": "http://localhost:9000/token",
+        "description": "The URL of the token endpoint of the system under test.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "token_endpoint_url",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": true,
+        "type": "TEXT",
+        "typeDefined": true
+      },
+      {
+        "defaultInOptions": true,
+        "defaultValue": "client-id",
+        "description": "The client id of the IUA client simulator.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "client_id",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": true,
+        "type": "TEXT",
+        "typeDefined": true
+      },
+      {
+        "defaultInOptions": true,
+        "defaultValue": "client-secret",
+        "description": "The client secret of the IUA client simulator.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "client_secret",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": true,
+        "type": "TEXT",
+        "typeDefined": true
+      },
+      {
+        "defaultInOptions": true,
+        "defaultValue": "purpose_of_use=urn:oid:2.16.756.5.30.1.127.3.10.5|NORMAL subject_role=urn:oid:2.16.756.5.30.1.127.3.10.6|HCP",
+        "description": "The scope to be requested defining the user role and purpose of use.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "scope",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": true,
+        "type": "TEXT",
+        "typeDefined": true
+      },
+      {
+        "defaultInOptions": true,
+        "defaultValue": "761337610411353650^^^&2.16.756.5.30.1.127.3.10.3&ISO",
+        "description": "The SPID of the patient dossier to be accessed, required for extended access token.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "person_id",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": false,
+        "type": "TEXT",
+        "typeDefined": true
+      },
+      {
+        "defaultInOptions": true,
+        "defaultValue": "principal.name",
+        "description": "The GLN of the responsible person for the request. Required for assistants with role ASS.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "principal",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": false,
+        "type": "TEXT",
+        "typeDefined": true
+      },
+      {
+        "defaultInOptions": true,
+        "defaultValue": "principal.id",
+        "descriptionDefined": false,
+        "groupNameDefined": false,
+        "name": "principal_id",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": false,
+        "type": "TEXT",
+        "typeDefined": true
+      },
+      {
+        "defaultInOptions": true,
+        "defaultValue": "group.name",
+        "description": "The name of the institution or group the request ist performed on behalf. Optional for role HCP and ASS.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "group",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": false,
+        "type": "TEXT",
+        "typeDefined": true
+      },
+      {
+        "defaultInOptions": true,
+        "defaultValue": "group.id",
+        "description": "The OID of the institution or group the request ist performed on behalf. Optional for role HCP and ASS.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "group",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": false,
+        "type": "TEXT",
+        "typeDefined": true
+      },
+      {
+        "defaultInOptions": true,
+        "defaultValue": "{ \"kty\": \"RSA\",\n  \"e\": \"AQAB\",\n  \"use\": \"sig\",\n  \"kid\": \"public key example for jwt verification\",\n  \"alg\": \"RS256\",\"n\":\n  \"0cWIFQS_1j03ioYCe5ZWbB6DINLsIBzw-Q3gftca6Fb6boim2BqKzpLQLDloN2KuZpbFJA70GlsJPhu5F72YFKbFPabrF11amSUUHR8UJlpwS9x57AFtEqKuxiTlb7rG2diDVqAMOdQ7n8gQEOBmhKOfnKKQyBcGIA7kfVocxSTRchmskNe_sHBXhxXH-k2vYTRLGJxSvaaGD6HX2XRtPGKnAVL7LoO8xqXUR_by9LbDBfPL4aKzcBDdzwV47hHjQvgk-rDvqownnGBPq-nRiIQjt58dAfNhTnLQUeXOEmDiUP06s4XlW5niynTYSJHDdeT29QhX3Bsdqqq3XinMpQ\"\n}\n",
+        "description": "The public key to verify the JWT signature of the system under test.",
+        "descriptionDefined": true,
+        "groupNameDefined": false,
+        "name": "jwt_public_key",
+        "nameDefined": true,
+        "options": [],
+        "optionsOrValueSet": true,
+        "required": true,
+        "type": "TEXT",
+        "typeDefined": true
+      }
+    ],
+    "testedRoles": [
+      {
+        "name": "CH:IUA Server",
+        "nameDefined": true,
+        "typeDefined": false
+      }
+    ],
+    "transactions": [
+      "Get Access Token [ITI-71]"
+    ]
+  }
+]

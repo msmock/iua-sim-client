@@ -507,6 +507,5 @@ public class IUAClientSimulationService implements SimulationService {
         );
 
         return sequence;
-
     }
 }
