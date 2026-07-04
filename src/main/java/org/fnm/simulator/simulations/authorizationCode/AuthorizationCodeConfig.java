@@ -2,9 +2,14 @@ package org.fnm.simulator.simulations.authorizationCode;
 
 import net.ihe.gazelle.simulation.business.callback.Role;
 import net.ihe.gazelle.simulation.business.setup.*;
+import org.fnm.simulator.helper.UserRole;
 import org.jboss.logging.Logger;
+import org.jspecify.annotations.NonNull;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Container for the simulation configuration and parameters.
@@ -34,7 +39,7 @@ public class AuthorizationCodeConfig {
     public String clientId;
     public String clientSecret;
     public String state;
-    // public String redirectUri;
+    // public String redirectUri; // fixed for the simulator
     public String scope;
     public String personId;
     public String principal;
@@ -42,8 +47,8 @@ public class AuthorizationCodeConfig {
     public String group;
     public String groupId;
     public String resource;
-    // public String codeChallenge;
-    // public String codeChallengeMethod;
+    // public String codeChallenge; // currently not used
+    // public String codeChallengeMethod; // currently not used
     public String requestedTokenType;
 
     public String jwtPublicKey;
@@ -53,7 +58,7 @@ public class AuthorizationCodeConfig {
 
 
     /**
-     *
+     * Container for the simulation configuration parameters.
      */
     public AuthorizationCodeConfig(String sessionId, SimulationRequest simulationRequest) {
 
@@ -99,8 +104,6 @@ public class AuthorizationCodeConfig {
     }
 
     /**
-     * TODO extend for ROLE specific requirements
-     *
      * Validate the configuration.
      */
     public AdditionalInstructions validate() {
@@ -124,20 +127,73 @@ public class AuthorizationCodeConfig {
         if (jwtPublicKey == null || jwtPublicKey.isBlank())
             builder.append("JWT public key is not set.");
 
+        // eval the scope
+        Map<String, String> scopeMap = parseScope(scope);
+        String subjectRole = scopeMap.get("subject_role");
+
+        if (subjectRole == null || subjectRole.isBlank()) {
+            builder.append("Scope does not contain a subject role.");
+            return getAdditionalInstructions(builder.toString());
+        }
+
+        // ROLE specific requirements
+        if (subjectRole.endsWith(UserRole.ASS)) {
+            if (principal == null || principal.isBlank())
+                builder.append("Principal is not set but is required for subject role ASS.");
+
+            if (principalId == null || principalId.isBlank())
+                builder.append("Principal ID is not set but is required for subject role ASS.");
+        }
+
         String message = builder.toString();
         if (!message.isEmpty()) {
-            LOG.error(message);
-            AdditionalInstructions additionalInstructions = new AdditionalInstructions();
-            additionalInstructions.setSimulationId(sequenceId);
-            additionalInstructions.setInstruction(message);
-            return additionalInstructions; // new SwitchToExecution();
+            return getAdditionalInstructions(message);
         }
 
         return null;
     }
 
+    private @NonNull AdditionalInstructions getAdditionalInstructions(String message) {
+        LOG.error(message);
+        AdditionalInstructions additionalInstructions = new AdditionalInstructions();
+        additionalInstructions.setSimulationId(sequenceId);
+        additionalInstructions.setInstruction(message);
+        return additionalInstructions;
+    }
+
     public boolean isForExtendedToken() {
         return personId != null && !personId.isEmpty();
+    }
+
+    /**
+     * Parse the scope string into a map of key-value pairs.
+     *
+     * @param scopeString the scope as presented in the request
+     * @return a map of key-value pairs
+     */
+    public Map<String, String> parseScope(String scopeString) {
+
+        if (scopeString == null || scopeString.trim().isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        // split on whitespace or commas
+        String[] tokens = scopeString.trim().split("[\\s,]+");
+
+        Map<String, String> result = new LinkedHashMap<>();
+        for (String token : tokens) {
+
+            if (token.isEmpty()) continue;
+            int idx = token.indexOf('=');
+            if (idx <0 ){
+                result.put(token.trim(), "");
+            } else {
+                String key = token.substring(0, idx).trim();
+                String val = token.substring(idx + 1).trim();
+                if (!key.isEmpty()) result.put(key, val);
+            }
+        }
+        return result;
     }
 
 }

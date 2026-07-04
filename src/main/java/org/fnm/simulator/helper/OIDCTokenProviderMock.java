@@ -28,7 +28,7 @@ public class OIDCTokenProviderMock {
 
     private static final Logger LOG = Logger.getLogger(OIDCTokenProviderMock.class);
 
-    private IDTokenHelper idTokenHelper = new IDTokenHelper();
+    private final IDTokenHelper idTokenHelper = new IDTokenHelper();
 
     @Inject
     IUAClientSimulationService simulationService;
