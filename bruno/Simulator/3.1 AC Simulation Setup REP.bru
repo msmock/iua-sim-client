@@ -1,7 +1,7 @@
 meta {
-  name: 3.1 AC Simulation Setup
+  name: 3.1 AC Simulation Setup REP
   type: http
-  seq: 5
+  seq: 8
 }
 
 post {
@@ -42,32 +42,12 @@ body:json {
       {
         "name": "scope",
         "type": "TEXT",
-        "value": "purpose_of_use=urn:oid:2.16.756.5.30.1.127.3.10.5|NORMAL subject_role=urn:oid:2.16.756.5.30.1.127.3.10.6|HCP"
+        "value": "purpose_of_use=urn:oid:2.16.756.5.30.1.127.3.10.5|NORMAL subject_role=urn:oid:2.16.756.5.30.1.127.3.10.6|REP"
       },
       {
         "name": "person_id",
         "type": "TEXT",
         "value": "761337610411353650^^^&2.16.756.5.30.1.127.3.10.3&ISO"
-      },
-      {
-        "name": "principal",
-        "type": "TEXT",
-        "value": "${principal}"
-      },
-      {
-        "name": "principal_id",
-        "type": "TEXT",
-        "value": "${principal-id}"
-      },
-      {
-        "name": "group",
-        "type": "TEXT",
-        "value": "${group.name}"
-      },
-      {
-        "name": "group_id",
-        "type": "TEXT",
-        "value": "${group.name}"
       },
       {
         "name": "jwt_public_key",
