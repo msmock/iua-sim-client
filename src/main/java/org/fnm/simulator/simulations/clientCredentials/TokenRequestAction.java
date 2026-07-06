@@ -194,8 +194,8 @@ public class TokenRequestAction {
             responseMessage.setName("Get Access Token Response");
             responseMessage.setContent(responseBody.getBytes(StandardCharsets.UTF_8));
             responseMessage.setDateTime(Instant.now());
-            responseMessage.setSender(config.initiator.getName());
-            responseMessage.setReceiver(config.responder.getName());
+            responseMessage.setSender(config.responder.getName());
+            responseMessage.setReceiver(config.initiator.getName());
             report.setMessages(List.of(responseMessage));
 
             report.setNote("The JWT token is valid.");

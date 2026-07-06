@@ -35,7 +35,12 @@ public class IUASimulatorLifecycleBean {
     @ConfigProperty(name = "version")
     String version;
 
-    // the URL of the simulation service?
+    @ConfigProperty(name = "instanceId")
+    String instanceId;
+
+    @ConfigProperty(name = "replicaId")
+    String replicaId = UUID.randomUUID().toString();
+
     @ConfigProperty(name = "simulationServiceUrl")
     String simulationServiceUrl;
 
@@ -43,9 +48,6 @@ public class IUASimulatorLifecycleBean {
 
     @Inject
     BasicWebSocketConnector connector;
-
-    final String instanceId = UUID.randomUUID().toString();
-    final String replicaId = UUID.randomUUID().toString();
 
     /**
      *

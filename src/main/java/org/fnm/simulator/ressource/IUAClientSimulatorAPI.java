@@ -1,11 +1,15 @@
 package org.fnm.simulator.ressource;
 
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
+import net.ihe.gazelle.modelmarshaller.technical.jackson.ObjectMapperBuilder;
 import net.ihe.gazelle.simulation.business.sequence.*;
 import net.ihe.gazelle.simulation.business.setup.SetupOutcome;
 import net.ihe.gazelle.simulation.business.setup.SwitchToExecution;
+import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.callback.SimulationReportDTO;
+import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.sequence.SimulationSequenceDTO;
 import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.setup.SimulationRequestDTO;
 import net.ihe.gazelle.simulation.jaxrs.api.technical.ws.SimulationAPI;
 import org.fnm.simulator.IUAClientSimulationService;
@@ -25,9 +29,15 @@ public class IUAClientSimulatorAPI implements SimulationAPI {
 
     @Override
     public Response getSimulationSequences() {
+
         SimulationSequence clientCredentialSequence = simulationService.getClientCredentialSequence();
         SimulationSequence authorizationCodeSequence = simulationService.getAuthorizationCodeSequence();
-        Response.ResponseBuilder builder = Response.ok(List.of(clientCredentialSequence, authorizationCodeSequence));
+
+        Response.ResponseBuilder builder = Response.ok(
+                List.of(
+                        clientCredentialSequence,
+                        authorizationCodeSequence));
+
         builder.header("Content-Type", "application/json");
         return builder.build();
     }

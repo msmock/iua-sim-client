@@ -1,15 +1,18 @@
 package org.fnm.simulator;
 
 import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.quarkus.logging.Log;
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.runtime.jackson.InstantSerializer;
 import jakarta.enterprise.context.ApplicationScoped;
+import net.ihe.gazelle.modelmarshaller.technical.jackson.ObjectMapperBuilder;
 import net.ihe.gazelle.simulation.business.callback.*;
 import net.ihe.gazelle.simulation.business.sequence.*;
 import net.ihe.gazelle.simulation.business.setup.*;
+import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.callback.SimulationReportDTO;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.fnm.simulator.helper.SigningKeyHelper;
 import org.fnm.simulator.simulations.authorizationCode.AuthorizationCodeConfig;
@@ -44,6 +47,9 @@ public class IUAClientSimulationService implements SimulationService {
 
     @ConfigProperty(name = "callback.url.base")
     String callbackURLBase;
+
+    @ConfigProperty(name = "version")
+    String version;
 
     private final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
 
@@ -183,7 +189,7 @@ public class IUAClientSimulationService implements SimulationService {
             simulationReport.setDateTime(Instant.now());
             simulationReport.setResult(transactionReport.getResult());
             simulationReport.setTransactionReports(List.of(transactionReport));
-            simulationReport.setServiceVersion("0.5.0");
+            simulationReport.setServiceVersion(version);
             simulationReport.setSimulationParameters(authorizationCodeSimulation.getConfig().simulationParameters);
 
             LOG.info("Finished authorizationCodeSimulation with session id " + sessionId);
@@ -206,16 +212,9 @@ public class IUAClientSimulationService implements SimulationService {
 
         try {
 
-            JsonMapper mapper = new JsonMapper();
-
-            // not nice, but required to serialize the simulation report
-            SimpleModule timeModule = new SimpleModule();
-            timeModule.addSerializer(Instant.class, new InstantSerializer());
-            mapper.registerModule(timeModule);
-            mapper.disable(MapperFeature.REQUIRE_HANDLERS_FOR_JAVA8_TIMES); // TODO improve and register handler
-            mapper.disable(MapperFeature.REQUIRE_HANDLERS_FOR_JAVA8_OPTIONALS);
-
-            String result = mapper.writeValueAsString(report);
+            JsonMapper mapper = new ObjectMapperBuilder().getBuilder().build();
+            SimulationReportDTO dto = new SimulationReportDTO(report);
+            String result = mapper.writeValueAsString(dto);
 
             Log.info("Sending report: " + result);
 
@@ -291,9 +290,9 @@ public class IUAClientSimulationService implements SimulationService {
         clientId.setDescription("The client id of the IUA client simulator.");
 
         SupportedParameter clientSecret = new SupportedParameter();
-        clientId.setName("client_secret").setType(ParameterType.TEXT);
-        clientId.setDefaultValue("client-secret").setRequired(true);
-        clientId.setDescription("The client secret of the IUA client simulator.");
+        clientSecret.setName("client_secret").setType(ParameterType.TEXT);
+        clientSecret.setDefaultValue("client-secret").setRequired(true);
+        clientSecret.setDescription("The client secret of the IUA client simulator.");
 
         SupportedParameter principal = new SupportedParameter();
         principal.setName("principal").setType(ParameterType.TEXT);
@@ -358,6 +357,7 @@ public class IUAClientSimulationService implements SimulationService {
         // add the tested role
         TestedRole testedRole = new TestedRole();
         testedRole.setName("CH:IUA Server");
+        testedRole.setType(RoleType.RESPONDER);
         sequence.setTestedRoles(List.of(testedRole));
 
         // add the simulationRole
@@ -440,7 +440,7 @@ public class IUAClientSimulationService implements SimulationService {
         SupportedParameter principalId = new SupportedParameter();
         principalId.setName("principal_id").setType(ParameterType.TEXT);
         principalId.setDefaultValue("principal.id").setRequired(false);
-        principal.setDescription("The GLN of the responsible person for the request. Required for assistants with role ASS.");
+        principalId.setDescription("The GLN of the responsible person for the request. Required for assistants with role ASS.");
 
         // optional group claim, only for role HCP and ASS
         SupportedParameter group = new SupportedParameter();
@@ -484,6 +484,7 @@ public class IUAClientSimulationService implements SimulationService {
 
         TestedRole testedRole = new TestedRole();
         testedRole.setName("CH:IUA Server");
+        testedRole.setType(RoleType.RESPONDER);
         sequence.setTestedRoles(List.of(testedRole));
 
         sequence.setStandards(List.of(
