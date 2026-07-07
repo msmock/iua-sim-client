@@ -179,7 +179,17 @@ public class TokenRequestAction {
 
             DecodedJWT jwt = verifier.verify(responseBody);
 
-            LOG.info("JWT payload is " + new String(Base64.getUrlDecoder().decode(jwt.getPayload())));
+            LOG.info("Request body is " + requestBody);
+            LOG.info("Response body is " + responseBody);
+
+            String header = new String(Base64.getUrlDecoder().decode(jwt.getHeader()));
+            LOG.info("Header is " + header);
+
+            String payload = new String(Base64.getUrlDecoder().decode(jwt.getPayload()));
+            LOG.info("Payload is " + payload);
+
+            String signature = new String(Base64.getUrlDecoder().decode(jwt.getSignature()));
+            LOG.info("Signature is " + signature);
 
             // create the transaction report
             TransactionReport report = new TransactionReport();
@@ -190,13 +200,41 @@ public class TokenRequestAction {
             report.setTransaction("CH:IUA Client Credential Flow [ITI-71]");
             report.setStandards(List.of("CH:IUA"));
 
-            Message responseMessage = new Message();
-            responseMessage.setName("Get Access Token Response");
-            responseMessage.setContent(responseBody.getBytes(StandardCharsets.UTF_8));
-            responseMessage.setDateTime(Instant.now());
-            responseMessage.setSender(config.responder.getName());
-            responseMessage.setReceiver(config.initiator.getName());
-            report.setMessages(List.of(responseMessage));
+            Message requestMessage = new Message();
+            requestMessage.setName("Get Access Token request");
+            requestMessage.setContent(requestBody.getBytes(StandardCharsets.UTF_8));
+            requestMessage.setDateTime(Instant.now());
+            requestMessage.setSender(config.initiator.getName());
+            requestMessage.setReceiver(config.responder.getName());
+
+            Message responseMessageJWTHeader = new Message();
+            responseMessageJWTHeader.setName("Get Access Token response JWT header");
+            responseMessageJWTHeader.setContent(header.getBytes(StandardCharsets.UTF_8));
+            responseMessageJWTHeader.setDateTime(Instant.now());
+            responseMessageJWTHeader.setSender(config.responder.getName());
+            responseMessageJWTHeader.setReceiver(config.initiator.getName());
+
+            Message responseMessageJWTPayload = new Message();
+            responseMessageJWTPayload.setName("Get Access Token response JWT payload");
+            responseMessageJWTPayload.setContent(payload.getBytes(StandardCharsets.UTF_8));
+            responseMessageJWTPayload.setDateTime(Instant.now());
+            responseMessageJWTPayload.setSender(config.responder.getName());
+            responseMessageJWTPayload.setReceiver(config.initiator.getName());
+
+            Message responseMessageJWTSignature = new Message();
+            responseMessageJWTSignature.setName("Get Access Token response JWT signature");
+            responseMessageJWTSignature.setContent(payload.getBytes(StandardCharsets.UTF_8));
+            responseMessageJWTSignature.setDateTime(Instant.now());
+            responseMessageJWTSignature.setSender(config.responder.getName());
+            responseMessageJWTSignature.setReceiver(config.initiator.getName());
+
+            report.setMessages(List.of(
+                    requestMessage,
+                    responseMessageJWTHeader,
+                    responseMessageJWTPayload,
+                    responseMessageJWTSignature
+                    )
+            );
 
             report.setNote("The JWT token is valid.");
             return report;
