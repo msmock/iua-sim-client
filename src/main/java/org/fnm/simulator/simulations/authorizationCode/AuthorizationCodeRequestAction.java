@@ -39,9 +39,6 @@ public class AuthorizationCodeRequestAction {
      */
     public TransactionReport run() {
 
-        // put client_id and client_secret in the Authentication header
-        String authHeader = buildAuthHeader(config.clientId, config.clientSecret);
-
         StringBuilder queryString = new StringBuilder();
         queryString.append("response_type=code");
         queryString.append("&client_id=").append(encode(config.clientId));
@@ -65,6 +62,9 @@ public class AuthorizationCodeRequestAction {
             queryString.append("&requested_token_type=").append(config.requestedTokenType);
 
         URI uri = URI.create(config.codeEndpointUrl + "?" + queryString.toString());
+
+        // put client_id and client_secret in the Authentication header
+        String authHeader = buildAuthHeader(config.clientId, config.clientSecret);
 
         HttpRequest httpRequest = HttpRequest.newBuilder()
                 .uri(uri)

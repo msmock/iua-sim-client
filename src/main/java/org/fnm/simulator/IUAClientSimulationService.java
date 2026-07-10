@@ -1,12 +1,9 @@
 package org.fnm.simulator;
 
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.quarkus.logging.Log;
 import io.quarkus.scheduler.Scheduled;
-import io.quarkus.vertx.runtime.jackson.InstantSerializer;
 import jakarta.enterprise.context.ApplicationScoped;
 import net.ihe.gazelle.modelmarshaller.technical.jackson.ObjectMapperBuilder;
 import net.ihe.gazelle.simulation.business.callback.*;
@@ -30,6 +27,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.text.ParseException;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,16 +38,19 @@ import java.util.concurrent.ConcurrentHashMap;
 @ApplicationScoped
 public class IUAClientSimulationService implements SimulationService {
 
+    private static final Logger LOG = Logger.getLogger(IUAClientSimulationService.class);
+
     public static final String CLIENT_CREDENTIAL_SEQUENCE_ID = "c74f063b-fb76-405e-8fa3-b2632b5c112f";
     public static final String AUTHORIZATION_CODE_SEQUENCE_ID = "0064e130-cf31-40f5-ad62-163af639b360";
-
-    private static final Logger LOG = Logger.getLogger(IUAClientSimulationService.class);
 
     @ConfigProperty(name = "callback.url.base")
     String callbackURLBase;
 
     @ConfigProperty(name = "version")
     String version;
+
+    @ConfigProperty(name = "access-token")
+    String accessToken;
 
     private final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
 
@@ -204,6 +205,9 @@ public class IUAClientSimulationService implements SimulationService {
     }
 
     /**
+     * The client shall present the access token in the http Authorization header using the Bearer token scheme:
+     * Authorization: Bearer <access_token>
+     *
      * @param report the simulation report to be send to the test platform
      */
     public void notifySimulation(SimulationReport report) {
@@ -218,9 +222,14 @@ public class IUAClientSimulationService implements SimulationService {
 
             Log.info("Sending report: " + result);
 
+            // put the access token in the Authentication header
+            String authHeader = buildAuthHeader(accessToken);
+
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(callbackURLBase + "?session=" + report.getUuid()))
                     .header("Content-Type", "application/json")
+                    .header("Cache-Control", "no-cache")
+                    .header("Authorization", authHeader)
                     .POST(HttpRequest.BodyPublishers.ofString(result))
                     .build();
 
@@ -508,5 +517,15 @@ public class IUAClientSimulationService implements SimulationService {
         );
 
         return sequence;
+    }
+
+    /**
+     * Build the Authorization header for the client credential flow.
+     *
+     * @return encoded authorization header with content clientId:clientSecret
+     */
+    private String buildAuthHeader(String accessToken) {
+        String encodedCredentials = Base64.getEncoder().encodeToString(accessToken.getBytes());
+        return "Basic " + encodedCredentials;
     }
 }
