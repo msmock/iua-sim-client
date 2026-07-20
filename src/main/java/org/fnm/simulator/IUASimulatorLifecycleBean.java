@@ -21,8 +21,6 @@ import java.util.UUID;
 /**
  * Manage the application lifecycle and schedule service registration via web socket interface to periodically
  * send the service metadata to the test environment.
- *
- * See https://connectathon.ihe-catalyst.net/service-registry/service-registration-api/index.html
  */
 @ApplicationScoped
 public class IUASimulatorLifecycleBean {
