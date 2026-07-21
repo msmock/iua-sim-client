@@ -107,6 +107,7 @@ public class AuthorizationCodeConfig {
 
     /**
      * Validate the configuration.
+     * @return AdditionalInstructions information about the validation result.
      */
     public AdditionalInstructions validate() {
 
