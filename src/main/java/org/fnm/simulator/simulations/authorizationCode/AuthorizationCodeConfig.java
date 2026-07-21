@@ -59,6 +59,8 @@ public class AuthorizationCodeConfig {
 
     /**
      * Container for the simulation configuration parameters.
+     * @param sessionId the current test session
+     * @param simulationRequest the information required for a single simulation run
      */
     public AuthorizationCodeConfig(String sessionId, SimulationRequest simulationRequest) {
 

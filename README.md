@@ -54,7 +54,7 @@ You can run your application in dev mode that enables live coding using:
 You can run the native executable build in a container using:
 
 ```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
+./mvnw package -Dnative -Dquarkus.native.container-build=true -Dmaven.javadoc.skip=true
 ```
 
 You can then execute your native executable with: `./target/quarkus-test-1.0.0-SNAPSHOT-runner`

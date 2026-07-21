@@ -52,6 +52,8 @@ public class IUAClientSimulatorAPI implements SimulationAPI {
     }
 
     /**
+     * Setup the simulation with the given information
+     *
      * @param callback called callback in the SimulationAPI interface. Shall be a unique identifier for the test session.
      * @param simulationRequest the information required for a single simulation run
      * @return the SetupOutcome
@@ -65,7 +67,6 @@ public class IUAClientSimulatorAPI implements SimulationAPI {
     }
 
     /**
-     *
      * run the simulation with the session id
      *
      * @param simulationSessionId the session id of the simulation

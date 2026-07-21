@@ -40,6 +40,7 @@ public class JWTTokenHelper {
      * Used in signature verification of the AuthZ Server's response. Creates an Elliptic Curve Algorithm instance
      * from a public key configured for this test.
      *
+     * @param key the public key as a string.
      * @return an {@code Algorithm} instance configured with the ECDSA-256 algorithm and the parsed public key.
      * @throws ParseException if the JWK content cannot be properly parsed.
      * @throws JOSEException  if an error occurs during the conversion or processing of the JWK.
@@ -53,6 +54,7 @@ public class JWTTokenHelper {
      * Used in signature verification of the AuthZ Server's response. Creates an RSA Algorithm instance
      * from from a public key configured for this test.
      *
+     * @param key the public key as a string.
      * @return an {@code Algorithm} instance configured with the RSA-256 algorithm and the parsed public key.
      * @throws ParseException if the JWK content cannot be properly parsed.
      * @throws JOSEException  if an error occurs during the conversion or processing of the JWK.

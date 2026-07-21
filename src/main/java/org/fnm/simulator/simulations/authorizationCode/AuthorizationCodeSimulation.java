@@ -18,12 +18,20 @@ public class AuthorizationCodeSimulation {
     private final AuthorizationCodeRequestAction authorizationCodeRequestAction;
     private final TokenRequestAction tokenRequestAction;
 
+    /**
+     * Constructor with configuration parameters.
+     * @param config the configuration parameters for the authorization code flow.
+     */
     public AuthorizationCodeSimulation(AuthorizationCodeConfig config) {
         this.config = config;
         this.authorizationCodeRequestAction = new AuthorizationCodeRequestAction(config);
         this.tokenRequestAction = new TokenRequestAction(config);
     }
 
+    /**
+     * Run the simulation.
+     * @return TransactionReport with the result of the test
+     */
     public TransactionReport run() {
 
         status = Status.RUNNING;
@@ -44,6 +52,9 @@ public class AuthorizationCodeSimulation {
         return tokenRequestReport;
     }
 
+    /**
+     * @return the configuration of the simulation
+     */
     public AuthorizationCodeConfig getConfig() {
         return config;
     }

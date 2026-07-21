@@ -393,6 +393,7 @@ public class IUAClientSimulationService implements SimulationService {
             throw new RuntimeException(e);
         }
 
+        LOG.info("Return the Authorization Code Flow Sequence: " + sequence);
         return sequence;
     }
 
@@ -516,6 +517,7 @@ public class IUAClientSimulationService implements SimulationService {
                         "The second http request is signed using http signature as defined in RFC-9421 with the private key of the simulator."
         );
 
+        LOG.info("Return the Authorization Code Flow Sequence: " + sequence);
         return sequence;
     }
 

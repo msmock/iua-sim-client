@@ -67,6 +67,8 @@ public class OIDCTokenProviderMock {
     }
 
     /**
+     * Builds the OIDC response payload.
+     * @param clientId the client ID to be included in the ID Token
      * @return token payload as JSON
      */
     private JsonObject buildResponsePayload(String clientId) throws ParseException, IOException, JOSEException {

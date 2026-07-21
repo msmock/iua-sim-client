@@ -34,7 +34,6 @@ public class AuthorizationCodeRequestAction {
 
     /**
      * Run the simulation.
-     *
      * @return a TransactionReport object indicating the result of the test.
      */
     public TransactionReport run() {
@@ -161,13 +160,19 @@ public class AuthorizationCodeRequestAction {
         return report;
     }
 
+    /**
+     * URL encode the string.
+     * @param s the string to encode
+     * @return the encoded string
+     */
     private String encode(String s) {
         return URLEncoder.encode(s, StandardCharsets.UTF_8);
     }
 
     /**
      * Build the Authorization header for the client credential flow.
-     *
+     * @param clientId the client id
+     * @param clientSecret the client secret
      * @return encoded authorization header with content clientId:clientSecret
      */
     private String buildAuthHeader(String clientId, String clientSecret) {
@@ -177,6 +182,7 @@ public class AuthorizationCodeRequestAction {
     }
 
     /**
+     * @param message the error message
      * @return a transaction report indicating a failed test
      */
     private TransactionReport getFailedTransactionReport(String message) {

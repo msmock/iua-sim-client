@@ -39,7 +39,9 @@ public class ClientCredentialConfig {
     public String jwtPublicKey;
 
     /**
-     *
+     * Container for the simulation configuration parameters.
+     * @param sessionId the current test session
+     * @param simulationRequest the information required for a single simulation run
      */
     public ClientCredentialConfig(String sessionId, SimulationRequest simulationRequest) {
 
@@ -80,8 +82,8 @@ public class ClientCredentialConfig {
     }
 
     /**
-     *
      * Validate the configuration.
+     * @return AdditionalInstructions information about the validation result.
      */
     public AdditionalInstructions validate() {
 
@@ -120,6 +122,10 @@ public class ClientCredentialConfig {
         return null;
     }
 
+    /**
+     * Check if the request is for an extended or basic token.
+     * @return true if the person_id is set, false otherwise.
+     */
     public boolean isForExtendedToken() {
         return personId != null && !personId.isBlank();
     }

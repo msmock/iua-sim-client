@@ -13,7 +13,7 @@ RUN mkdir -p /app && \
 COPY --chown=1001:root --chmod=0755 target/iua-sim-client-1.0.0-SNAPSHOT-runner /app/application
 
 # Expose the HTTP port
-EXPOSE 9000
+EXPOSE 8080
 
 # Command to run the application
 CMD ["./application"]

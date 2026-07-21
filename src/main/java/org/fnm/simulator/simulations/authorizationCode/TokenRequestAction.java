@@ -279,6 +279,7 @@ public class TokenRequestAction {
     }
 
     /**
+     * Encode the body elements in the request body with URLEncode
      * @param bodyElements map of key value pairs to be encoded in the request body
      * @return the encoded body as a string
      */
@@ -297,7 +298,8 @@ public class TokenRequestAction {
 
     /**
      * Build the Authorization header for the client credential flow.
-     *
+     * @param clientId the client id
+     * @param clientSecret the client secret
      * @return encoded authorization header with content clientId:clientSecret
      */
     private String buildAuthHeader(String clientId, String clientSecret) {
@@ -307,6 +309,7 @@ public class TokenRequestAction {
     }
 
     /**
+     * @param message the error message
      * @return a transaction report indicating a failed test
      */
     private TransactionReport getFailedTransactionReport(String message) {
@@ -322,6 +325,7 @@ public class TokenRequestAction {
     }
 
     /**
+     * @param message the error message
      * @return a transaction report indicating an undefined test result caused by an error in the simulator.
      */
     private TransactionReport getUndefinedTransactionReport(String message) {

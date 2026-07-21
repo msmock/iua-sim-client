@@ -14,6 +14,7 @@ import java.time.Instant;
 public class IDTokenHelper {
 
     /**
+     * @param clientId the client ID to be included in the ID Token
      * @return the ID Token as string as it would be returned by the OIDC server
      */
     public String buildIdToken(String clientId) throws ParseException, IOException, JOSEException {

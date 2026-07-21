@@ -19,11 +19,19 @@ public class ClientCredentialsSimulation {
     private final ClientCredentialConfig config;
     private final TokenRequestAction action;
 
+    /**
+     * Constructor with configuration parameters.
+     * @param config the configuration parameters for the client credential flow.
+     */
     public ClientCredentialsSimulation(ClientCredentialConfig config) {
         this.config = config;
         this.action = new TokenRequestAction(config);
     }
 
+    /**
+     * Run the simulation.
+     * @return transaction report indicating the result of the test.
+     */
     public TransactionReport run() {
         status = Status.RUNNING;
         TransactionReport transactionReport = action.run();
