@@ -73,7 +73,7 @@ public class IUASimulatorLifecycleBean {
      *
      * @throws JsonProcessingException never happens
      */
-    @Scheduled(every = "10s")
+    @Scheduled(every = "30s")
     void run() throws JsonProcessingException {
 
         if (connection == null || !connection.isOpen()) {
