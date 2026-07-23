@@ -393,7 +393,7 @@ public class IUAClientSimulationService implements SimulationService {
             throw new RuntimeException(e);
         }
 
-        LOG.info("Return the Authorization Code Flow Sequence: " + sequence);
+        LOG.info("Return the Client Credential Flow Sequence: " + sequence);
         return sequence;
     }
 
