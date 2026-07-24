@@ -1,5 +1,6 @@
 package org.fnm.simulator.simulations.clientCredentials;
 
+import net.ihe.gazelle.simulation.business.callback.Result;
 import net.ihe.gazelle.simulation.business.callback.TransactionReport;
 import org.fnm.simulator.simulations.Status;
 import org.jboss.logging.Logger;
@@ -21,6 +22,7 @@ public class ClientCredentialsSimulation {
 
     /**
      * Constructor with configuration parameters.
+     *
      * @param config the configuration parameters for the client credential flow.
      */
     public ClientCredentialsSimulation(ClientCredentialConfig config) {
@@ -30,13 +32,23 @@ public class ClientCredentialsSimulation {
 
     /**
      * Run the simulation.
+     *
      * @return transaction report indicating the result of the test.
      */
     public TransactionReport run() {
+
         status = Status.RUNNING;
-        TransactionReport transactionReport = action.run();
-        status = Status.DONE;
-        return transactionReport;
+        LOG.info("Running ClientCredentialsSimulation with session id " + config.sessionId);
+
+        try {
+            return action.run();
+        } catch (Exception e) {
+            status = Status.DONE;
+            LOG.error("Exception in running the simulation ", e);
+            return new TransactionReport().setResult(Result.FAILED).setNote("Exception in running the simulation " + e.getMessage());
+        } finally {
+            status = Status.DONE;
+        }
     }
 
     public ClientCredentialConfig getConfig() {

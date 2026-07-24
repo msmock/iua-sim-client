@@ -38,18 +38,24 @@ public class AuthorizationCodeSimulation {
 
         LOG.info("Running authorizationCodeSimulation with session id " + config.sessionId);
 
-        TransactionReport authorizationCodeRequestReport = authorizationCodeRequestAction.run();
-        if(authorizationCodeRequestReport.getResult().equals(Result.FAILED)){
-            return authorizationCodeRequestReport;
-        }
+        try {
 
-        TransactionReport tokenRequestReport = tokenRequestAction.run();
-        if(tokenRequestReport.getResult().equals(Result.FAILED)){
+            TransactionReport authorizationCodeRequestReport = authorizationCodeRequestAction.run();
+            if (authorizationCodeRequestReport.getResult().equals(Result.FAILED)) {
+                return authorizationCodeRequestReport;
+            }
+
+            TransactionReport tokenRequestReport = tokenRequestAction.run();
+            if (tokenRequestReport.getResult().equals(Result.FAILED)) {
+                return tokenRequestReport;
+            }
+
+            status = Status.DONE;
             return tokenRequestReport;
-        }
 
-        status = Status.DONE;
-        return tokenRequestReport;
+        } finally {
+            status = Status.DONE;
+        }
     }
 
     /**

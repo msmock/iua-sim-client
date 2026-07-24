@@ -223,7 +223,7 @@ public class TokenRequestAction {
 
             Message responseMessageJWTSignature = new Message();
             responseMessageJWTSignature.setName("Get Access Token response JWT signature");
-            responseMessageJWTSignature.setContent(payload.getBytes(StandardCharsets.UTF_8));
+            responseMessageJWTSignature.setContent(signature.getBytes(StandardCharsets.UTF_8));
             responseMessageJWTSignature.setDateTime(Instant.now());
             responseMessageJWTSignature.setSender(config.responder.getName());
             responseMessageJWTSignature.setReceiver(config.initiator.getName());

@@ -65,6 +65,22 @@ You can then execute your native executable with: `./target/quarkus-test-1.0.0-S
 docker build -t iua-sim-client .
 ```
 
+## Creating a native executable
+
+You can run the native executable build in a container using:
+
+```shell script
+./mvnw clean package -Dnative -Dquarkus.native.container-build=true -Dmaven.javadoc.skip=true
+```
+
+You can then execute your native executable with: `./target/quarkus-test-1.0.0-SNAPSHOT-runner`
+
+## Create docker image
+
+```shell script
+docker build -t iua-sim-client .
+```
+
 ## Run docker image in bridge network (Failed)
 
 create network:
@@ -74,14 +90,12 @@ docker network create my_network
 
 build image:
 ```
-docker build -t iua-sim-client .
+docker build -t iua-sim-serv .
 ```
 
-run containers:
+run container:
 ```
-docker run -d --name iua-ru-mock -p 9090:9090 --network my_network iua-ru-mock
-docker run -d --name iua-sim-serv -p 9000:9000 --network my_network iua-sim-serv 
-docker run -d --name iua-sim-client -p 8080:8080 --network my_network iua-sim-client
+docker run -d --name iua-sim-client -p 8080:8080 --network my_network iua-sim-client 
 ``` 
 
 inspect the network:
@@ -89,36 +103,25 @@ inspect the network:
 docker network inspect my_network
 ```
 
-Most “containers on the same custom bridge network can’t talk over HTTP” issues in Docker come down to one of these:
+## Docker hints:
 
-1) You’re calling the service using the wrong port (host vs container port)
-
-On a user-defined bridge network, containers should reach each other using:
-
-the container’s internal port (the port the process listens on inside the container), and
-the other container’s name as the hostname (e.g., iua-ru-mock, iua-sim-serv).
-The -p 9090:9090 / -p 9000:9000 / -p 8080:8080 parts are for host ↔ container traffic, not container ↔ container.
+On a user-defined bridge network, containers should reach each other using
+- the container’s internal port (the port the process listens on inside the container), and
+- the other container’s name as the hostname (e.g., iua-ru-mock, iua-sim-serv).
+- The -p 9090:9090 / -p 9000:9000 / -p 8080:8080 parts are for host ↔ container traffic, not container ↔ container.
 
 So if inside iua-sim-client you configured something like:
+- ```http://localhost:9090``` that will hit the client container itself, not the service in other container
+- ```http://{$other-container-name}:9090``` is fine only if the conatiner named {$other-container-name} actually listens on 9090 inside it's container
 
-http://localhost:9090 → that will hit the client container itself, not iua-ru-mock
-http://iua-ru-mock:9090 is fine only if iua-ru-mock actually listens on 9090 inside its container
+Even if containers can resolve each other, HTTP won’t work if the server binds only to loopback address.
+You need the server to listen on:
+- 0.0.0.0 (all interfaces) or the container’s network interface, not just 127.0.0.1.
+- If the app listens only on localhost, then other containers can’t reach it.
 
-Check what ports the apps actually listen on (often via container logs or by checking the process config).
+Within the bridge network (e.g., my_network), you must use the container name as DNS:
+```
+http://{$container-name}:<internalPort>/...
+```
 
-2) The app inside the container is only listening on 127.0.0.1
-
-Even if containers can resolve each other, HTTP won’t work if the server binds only to loopback.
-
-You need the server (in iua-ru-mock, etc.) to listen on:
-
-0.0.0.0 (all interfaces) or the container’s network interface, not just 127.0.0.1.
-If the app listens only on localhost, then other containers can’t reach it.
-
-3) You’re using the wrong hostname inside the network
-
-Within my_network, you typically use the container name as DNS:
-
-http://iua-ru-mock:<internalPort>/...
-`http://iua-sim-serv:/...
-localhost is always “this container”, not the other one.
+Localhost is always “this container”, not the other one.
