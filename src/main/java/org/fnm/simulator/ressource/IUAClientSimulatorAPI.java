@@ -1,5 +1,6 @@
 package org.fnm.simulator.ressource;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
@@ -11,7 +12,6 @@ import net.ihe.gazelle.simulation.business.setup.SetupOutcome;
 import net.ihe.gazelle.simulation.business.setup.SwitchToExecution;
 import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.sequence.SimulationSequenceDTO;
 import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.setup.AdditionalInstructionsDTO;
-import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.setup.SetupOutcomeDTO;
 import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.setup.SimulationRequestDTO;
 import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.setup.SwitchToExecutionDTO;
 import net.ihe.gazelle.simulation.jaxrs.api.technical.ws.SimulationAPI;
