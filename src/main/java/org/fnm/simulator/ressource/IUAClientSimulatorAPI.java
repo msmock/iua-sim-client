@@ -10,9 +10,11 @@ import net.ihe.gazelle.simulation.business.sequence.*;
 import net.ihe.gazelle.simulation.business.setup.AdditionalInstructions;
 import net.ihe.gazelle.simulation.business.setup.SetupOutcome;
 import net.ihe.gazelle.simulation.business.setup.SwitchToExecution;
+import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.sequence.SimulationSequenceDTO;
 import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.setup.AdditionalInstructionsDTO;
 import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.setup.SetupOutcomeDTO;
 import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.setup.SimulationRequestDTO;
+import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.setup.SwitchToExecutionDTO;
 import net.ihe.gazelle.simulation.jaxrs.api.technical.ws.SimulationAPI;
 import org.fnm.simulator.IUAClientSimulationService;
 import org.jboss.logging.Logger;
@@ -35,13 +37,21 @@ public class IUAClientSimulatorAPI implements SimulationAPI {
         SimulationSequence clientCredentialSequence = simulationService.getClientCredentialSequence();
         SimulationSequence authorizationCodeSequence = simulationService.getAuthorizationCodeSequence();
 
-        Response.ResponseBuilder builder = Response.ok(
-                List.of(
-                        clientCredentialSequence,
-                        authorizationCodeSequence));
+        JsonMapper mapper = new ObjectMapperBuilder().getBuilder().build();
+        SimulationSequenceDTO clientCredentialSequenceDTO = new SimulationSequenceDTO(clientCredentialSequence);
+        SimulationSequenceDTO authorizationCodeSequenceDTO = new SimulationSequenceDTO(authorizationCodeSequence);
 
-        builder.header("Content-Type", "application/json");
-        return builder.build();
+        try {
+
+            Response.ResponseBuilder builder = Response.ok(
+                    mapper.writeValueAsString(
+                    List.of(clientCredentialSequenceDTO, authorizationCodeSequenceDTO)));
+            builder.header("Content-Type", "application/json");
+            return builder.build();
+
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -64,19 +74,22 @@ public class IUAClientSimulatorAPI implements SimulationAPI {
     public Response setup(String callback, SimulationRequestDTO simulationRequest) throws RuntimeException {
 
         SetupOutcome outcome = simulationService.setup(callback, simulationRequest.getBusinessObject());
-        JsonMapper mapper = new ObjectMapperBuilder().getBuilder().build();
-        SetupOutcomeDTO<AdditionalInstructions> dto = new AdditionalInstructionsDTO( (AdditionalInstructions) outcome);
 
-        String result;
+        JsonMapper mapper = new ObjectMapperBuilder().getBuilder().build();
+        AdditionalInstructionsDTO dto = new AdditionalInstructionsDTO( (AdditionalInstructions) outcome);
+
         try {
-            result = mapper.writeValueAsString(dto);
+
+            String result = mapper.writeValueAsString(dto);
+            Response.ResponseBuilder builder = Response.ok(result);
+            builder.header("Content-Type", "application/json");
+            return builder.build();
+
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
 
-        Response.ResponseBuilder builder = Response.ok(result);
-        builder.header("Content-Type", "application/json");
-        return builder.build();
+
     }
 
     /**
@@ -87,11 +100,21 @@ public class IUAClientSimulatorAPI implements SimulationAPI {
      */
     @Override
     public Response resume(String simulationSessionId) {
+
         simulationService.runSimulation(simulationSessionId, null);
         SwitchToExecution resume = new SwitchToExecution();
-        Response.ResponseBuilder builder = Response.ok(resume);
-        builder.header("Content-Type", "application/json");
-        return builder.build();
+
+        JsonMapper mapper = new ObjectMapperBuilder().getBuilder().build();
+        SwitchToExecutionDTO dto = new SwitchToExecutionDTO(resume);
+
+        try {
+            String result = mapper.writeValueAsString(dto);
+            Response.ResponseBuilder builder = Response.ok(result);
+            builder.header("Content-Type", "application/json");
+            return builder.build();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
