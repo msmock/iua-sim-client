@@ -1,6 +1,7 @@
 package org.fnm.simulator;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import io.quarkus.logging.Log;
 import io.quarkus.scheduler.Scheduled;
@@ -10,6 +11,7 @@ import net.ihe.gazelle.simulation.business.callback.*;
 import net.ihe.gazelle.simulation.business.sequence.*;
 import net.ihe.gazelle.simulation.business.setup.*;
 import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.callback.SimulationReportDTO;
+import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.setup.AdditionalInstructionsDTO;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.fnm.simulator.helper.SigningKeyHelper;
 import org.fnm.simulator.simulations.authorizationCode.AuthorizationCodeConfig;
@@ -68,7 +70,7 @@ public class IUAClientSimulationService implements SimulationService {
      * @return the SetupOutcome
      */
     @Override
-    public SetupOutcome setup(String sessionId, SimulationRequest simulationRequest) {
+    public SetupOutcome setup(String sessionId, SimulationRequest simulationRequest) throws RuntimeException {
 
         // check if simulation is already running
         ClientCredentialsSimulation clientCredentialsSimulation = clientCredentialSimulations.get(sessionId);

@@ -1,15 +1,17 @@
 package org.fnm.simulator.ressource;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 import net.ihe.gazelle.modelmarshaller.technical.jackson.ObjectMapperBuilder;
 import net.ihe.gazelle.simulation.business.sequence.*;
+import net.ihe.gazelle.simulation.business.setup.AdditionalInstructions;
 import net.ihe.gazelle.simulation.business.setup.SetupOutcome;
 import net.ihe.gazelle.simulation.business.setup.SwitchToExecution;
-import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.callback.SimulationReportDTO;
-import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.sequence.SimulationSequenceDTO;
+import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.setup.AdditionalInstructionsDTO;
+import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.setup.SetupOutcomeDTO;
 import net.ihe.gazelle.simulation.jaxrs.api.technical.dto.setup.SimulationRequestDTO;
 import net.ihe.gazelle.simulation.jaxrs.api.technical.ws.SimulationAPI;
 import org.fnm.simulator.IUAClientSimulationService;
@@ -59,9 +61,20 @@ public class IUAClientSimulatorAPI implements SimulationAPI {
      * @return the SetupOutcome
      */
     @Override
-    public Response setup(String callback, SimulationRequestDTO simulationRequest) {
+    public Response setup(String callback, SimulationRequestDTO simulationRequest) throws RuntimeException {
+
         SetupOutcome outcome = simulationService.setup(callback, simulationRequest.getBusinessObject());
-        Response.ResponseBuilder builder = Response.ok(outcome);
+        JsonMapper mapper = new ObjectMapperBuilder().getBuilder().build();
+        SetupOutcomeDTO<AdditionalInstructions> dto = new AdditionalInstructionsDTO( (AdditionalInstructions) outcome);
+
+        String result;
+        try {
+            result = mapper.writeValueAsString(dto);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+        Response.ResponseBuilder builder = Response.ok(result);
         builder.header("Content-Type", "application/json");
         return builder.build();
     }
