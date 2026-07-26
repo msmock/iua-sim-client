@@ -3,24 +3,14 @@
 #
 # Before building the container image run:
 #
-# ./mvnw package
+# ./mvnw clean package -Dmaven.javadoc.skip=true
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.jvm -t quarkus/quarkus-test-jvm .
-#
-# Then run the container using:
-#
-# docker run -i --rm -p 8080:8080 quarkus/quarkus-test-jvm
-#
-# If you want to include the debug port into your docker image
-# you will have to expose the debug port (default 5005 being the default) like this :  EXPOSE 8080 5005.
-# Additionally you will have to set -e JAVA_DEBUG=true and -e JAVA_DEBUG_PORT=*:5005
-# when running the container
+# docker build -f src/main/docker/Dockerfile.jvm -t iua-sim-client .
 #
 # Then run the container using :
-#
-# docker run -i --rm -p 8080:8080 quarkus/quarkus-test-jvm
+# docker run -d --name iua-sim-client -p 8080:8080 --network my_network iua-sim-client
 #
 # This image uses the `run-java.sh` script to run the application.
 # This scripts computes the command line to execute your Java application, and

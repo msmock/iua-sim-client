@@ -49,59 +49,34 @@ You can run your application in dev mode that enables live coding using:
 
 > **_NOTE:_**  Quarkus ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
 
-## Creating a native executable
-
-You can run the native executable build in a container using:
-
-```shell script
-./mvnw clean package -Dnative -Dquarkus.native.container-build=true -Dmaven.javadoc.skip=true
-```
-
-You can then execute your native executable with: `./target/quarkus-test-1.0.0-SNAPSHOT-runner`
-
 ## Create docker image
 
 ```shell script
 docker build -t iua-sim-client .
 ```
 
-## Creating a native executable
-
-You can run the native executable build in a container using:
-
-```shell script
-./mvnw clean package -Dnative -Dquarkus.native.container-build=true -Dmaven.javadoc.skip=true
-```
-
-You can then execute your native executable with: `./target/quarkus-test-1.0.0-SNAPSHOT-runner`
-
-## Create docker image
-
-```shell script
-docker build -t iua-sim-client .
-```
-
-## Run docker image in bridge network (Failed)
+## Run docker image in bridge network
 
 create network:
 ```
 docker network create my_network
 ```
 
-build image:
+Compile: 
 ```
-docker build -t iua-sim-serv .
+./mvnw clean package -Dmaven.javadoc.skip=true
 ```
 
-run container:
+Build the image iua-sim-client:
 ```
-docker run -d --name iua-sim-client -p 8080:8080 --network my_network iua-sim-client 
-``` 
+# docker build -f src/main/docker/Dockerfile.jvm -t iua-sim-client .
+```
 
-inspect the network:
+Then run the container:
 ```
-docker network inspect my_network
+docker run -d --name iua-sim-client -p 8080:8080 --network my_network iua-sim-client
 ```
+
 
 ## Docker hints:
 
@@ -124,4 +99,4 @@ Within the bridge network (e.g., my_network), you must use the container name as
 http://{$container-name}:<internalPort>/...
 ```
 
-Localhost is always “this container”, not the other one.
+Localhost is always 'this container' not the other one.
