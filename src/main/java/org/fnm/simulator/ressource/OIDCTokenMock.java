@@ -1,37 +1,30 @@
-package org.fnm.simulator.helper;
+package org.fnm.simulator.ressource;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
-import org.fnm.simulator.IUAClientSimulationService;
+import org.fnm.simulator.helper.IDTokenHelper;
+import org.fnm.simulator.helper.SigningKeyHelper;
 import org.jboss.logging.Logger;
 
 import java.io.IOException;
-import java.security.PublicKey;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.UUID;
 
 @Path("/mock")
-public class OIDCTokenProviderMock {
+public class OIDCTokenMock {
 
-    private static final Logger LOG = Logger.getLogger(OIDCTokenProviderMock.class);
+    private static final Logger LOG = Logger.getLogger(OIDCTokenMock.class);
 
     private final IDTokenHelper idTokenHelper = new IDTokenHelper();
-
-    @Inject
-    IUAClientSimulationService simulationService;
 
     @GET
     @Path("oidc-reponse")
