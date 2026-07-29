@@ -164,7 +164,7 @@ public class IUAClientSimulationService implements SimulationService {
             simulationReport.setDateTime(Instant.now());
             simulationReport.setResult(transactionReport.getResult());
             simulationReport.setTransactionReports(List.of(transactionReport));
-            simulationReport.setServiceVersion("0.5.0");
+            simulationReport.setServiceVersion(version);
             simulationReport.setSimulationParameters(clientCredentialsSimulation.getConfig().simulationParameters);
 
             LOG.info("Finished clientCredentialsSimulation with session id " + sessionId);
@@ -222,13 +222,11 @@ public class IUAClientSimulationService implements SimulationService {
             Log.info("Sending report: " + result);
 
             // put the access token in the Authentication header
-            String authHeader = buildAuthHeader(accessToken);
-
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(callbackURLBase + "?session=" + report.getUuid()))
                     .header("Content-Type", "application/json")
                     .header("Cache-Control", "no-cache")
-                    .header("Authorization", authHeader)
+                    .header("Authorization", buildAuthHeader(accessToken))
                     .POST(HttpRequest.BodyPublishers.ofString(result))
                     .build();
 
