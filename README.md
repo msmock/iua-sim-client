@@ -1,6 +1,6 @@
 # IUA Simulation Client
 
-Simulates the CHI:IUA Client Actor with a Get Access Token [ITI-71] transaction for the client credential flow the
+Simulates the CHI:IUA Authorization client actor implementing a Get Access Token [ITI-71] transaction for the client credential
 and authorization code flow as specified in the [Swiss extension of the IUA profile](http://build.fhir.org/ig/ehealthsuisse/ch-epr-fhir/).
 
 ## IdP assertion
@@ -65,17 +65,17 @@ create network (if not exists):
 docker network create my_network
 ```
 
-Compile: 
+compile: 
 ```
 ./mvnw clean package -Dmaven.javadoc.skip=true
 ```
 
-Build the image iua-sim-client:
+build the image iua-sim-client:
 ```
 docker build -f src/main/docker/Dockerfile.jvm -t iua-sim-client .
 ```
 
-Then run the container:
+run the container:
 ```
 docker run -d --name iua-sim-client -p 8080:8080 --network my_network iua-sim-client
 ```
