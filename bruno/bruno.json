@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "Simulator",
+  "name": "IUAClientSimulator",
   "type": "collection",
   "ignore": [
     "node_modules",
