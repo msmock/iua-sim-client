@@ -3,6 +3,8 @@
 Simulates the CHI:IUA Client Actor with a Get Access Token [ITI-71] transaction for the client credential flow the
 and authorization code flow as specified in the [Swiss extension of the IUA profile](http://build.fhir.org/ig/ehealthsuisse/ch-epr-fhir/).
 
+## IdP assertion
+
 In the authorization code flow variant, the client simulator uses a mocked IdP assertion compliant with the specification
 in Annex 8 of the Swiss ordinances in the OpenId Connect ID token. The ID token is a signed JWT (usually signed with RS256). 
 The header contains alg and kid and the signature verifies the issuers public key (JWKS). 
@@ -16,7 +18,7 @@ The attributes in the payload are:
 - nonce : nonce from auth request
 
 The IdP assertion may look like: 
-````
+```
 {
   "iss": "http://client-simulator.org",
   "sub": "Bearer",
@@ -26,11 +28,17 @@ The IdP assertion may look like:
   "nonce": "n-0S6_WzA2Mj",
   "name": "Martina Mustermann"
 }
-````
+```
 
 The client simulator provides an inspection endpoint for the OIDC token response and the id_token. Please check the
 [bruno 4.0.0](https://www.usebruno.com/downloads) collection of http transactions provided with this project. 
-See https://www.jwt.io for decoding the id_token.
+See https://www.jwt.io for decoding the id_token. The key used to sign the id_token is provided in JWK format in the simulation 
+sequence response of the simulator.
+
+## http signature
+The client simulator uses a http signature to sign the GetAccessToken request. The key used to sign the http requests is 
+provided in JWK format in the simulation sequence response of the simulator.
+
 
 ## Testing locally
 For testing locally you may run this application from the terminal or in a docker container together with the
